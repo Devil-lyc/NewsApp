@@ -1,0 +1,47 @@
+<resources>
+    <string name="app_name">NewsApp</string>
+
+    <!-- 导航 -->
+    <string name="nav_home">首页</string>
+    <string name="nav_search">搜索</string>
+    <string name="nav_bookmark">收藏</string>
+    <string name="nav_profile">我的</string>
+
+    <!-- 首页 -->
+    <string name="headlines">今日要闻</string>
+    <string name="recommended">为你推荐</string>
+
+    <!-- 搜索页 -->
+    <string name="search_hint">搜索新闻</string>
+    <string name="hot_search">热门搜索</string>
+    <string name="search_results">搜索结果: %1$d</string>
+    <string name="no_results">没有找到相关结果</string>
+
+    <!-- 收藏页 -->
+    <string name="my_bookmarks">我的收藏</string>
+    <string name="empty_bookmark">你还没有收藏任何文章</string>
+    <string name="bookmark_hint">在阅读时点击收藏按钮将文章添加到这里</string>
+    <string name="clear_all">清空全部</string>
+
+    <!-- 个人中心 -->
+    <string name="profile">个人中心</string>
+    <string name="settings">设置</string>
+    <string name="about">关于</string>
+    <string name="logout">退出登录</string>
+    <string name="version">版本: %1$s</string>
+
+    <!-- 设置项 -->
+    <string name="language_setting">语言设置</string>
+    <string name="notification_setting">通知设置</string>
+    <string name="dark_mode">深色模式</string>
+    <string name="reading_setting">阅读设置</string>
+    <string name="offline_reading">离线阅读</string>
+    <string name="interest_setting">兴趣设置</string>
+
+    <!-- 通用 -->
+    <string name="back">返回</string>
+    <string name="share">分享</string>
+    <string name="bookmark">收藏</string>
+    <string name="unbookmark">取消收藏</string>
+    <string name="source">来源: %1$s</string>
+</resources>

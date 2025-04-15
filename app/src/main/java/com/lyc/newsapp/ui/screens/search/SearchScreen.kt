@@ -1,0 +1,336 @@
+package com.lyc.newsapp.ui.screens.search
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.lyc.newsapp.domain.model.News
+import com.lyc.newsapp.ui.components.NewsCard
+
+/** 搜索界面 */
+@Composable
+fun SearchScreen(
+    onArticleClick: (News) -> Unit
+) {
+    val searchViewModel = hiltViewModel<SearchViewModel>()
+    val searchUiState = searchViewModel.uiState.collectAsState()
+    // 搜索状态
+    var searchQuery by remember { mutableStateOf("") }
+
+    var isSearchActive by remember { mutableStateOf(false) }
+
+
+    // 热门搜索词
+    val hotSearchTerms = remember {
+        listOf(
+            Triple("数字人民币", "256万热度", 1),
+            Triple("碳中和", "198万热度", 2),
+            Triple("半导体芯片", "163万热度", 3),
+            Triple("量子通信", "129万热度", 4),
+            Triple("太空旅游", "95万热度", 5)
+        )
+    }
+
+    // 键盘控制器
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    // 执行搜索
+    val performSearch = {
+        if (searchQuery.isNotBlank()) {
+            searchViewModel.onEvent(SearchUiEvents.SearchNews(searchQuery))
+            isSearchActive = true
+            keyboardController?.hide()
+        }
+    }
+
+    Scaffold(
+            topBar = {
+                SearchBar(
+                    query = searchQuery,
+                    onQueryChange = { searchQuery = it },
+                    onSearch = { performSearch() },
+                    onClear = {
+                        searchQuery = ""
+                        isSearchActive = false
+                    }
+                )
+            }
+    ) { paddingValues ->
+        if (isSearchActive) {
+            // 处理加载状态
+            if (searchUiState.value.isLoading) {
+                // 加载中状态
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        CircularProgressIndicator(
+                            color = MaterialTheme.colorScheme.primary,
+                            strokeWidth = 3.dp
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "正在搜索「${searchQuery}」...",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            } else if (searchUiState.value.searchResults.isNotEmpty()) {
+                // 有搜索结果
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    item {
+                        Text(
+                            text = "搜索结果: ${searchUiState.value.searchResults.size}",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+
+                    items(searchUiState.value.searchResults) { news ->
+                        NewsCard(
+                            news = news,
+                            onArticleClick = onArticleClick
+                        )
+                    }
+                }
+            } else if (searchUiState.value.error != null) {
+                // 错误状态
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.size(48.dp)
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "搜索时出现错误",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = searchUiState.value.error ?: "未知错误",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+            } else {
+                // 无搜索结果
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(48.dp)
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "没有找到相关结果",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "尝试使用其他关键词搜索",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+        } else {
+            // 初始搜索页面
+            Column(modifier = Modifier.fillMaxSize().padding(paddingValues).padding(16.dp)) {
+                // 热门搜索
+                Text(
+                    text = "热门搜索", 
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.primary
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // 热门搜索词组
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    hotSearchTerms.forEach { (term, hotness, rank) ->
+                        HotSearchItem(
+                            rank = rank,
+                            text = term,
+                            hotness = hotness,
+                            onClick = {
+                                searchQuery = term
+                                performSearch()
+                            }
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+            }
+        }
+    }
+}
+
+/** 搜索栏 */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SearchBar(
+        query: String,
+        onQueryChange: (String) -> Unit,
+        onSearch: () -> Unit,
+        onClear: () -> Unit,
+        modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier.fillMaxWidth().height(75.dp),
+        color = MaterialTheme.colorScheme.background
+    ) {
+        Row(
+            modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            OutlinedTextField(
+                value = query,
+                onValueChange = onQueryChange,
+                modifier = Modifier.fillMaxWidth(),
+                placeholder = {
+                    Text(
+                        "搜索新闻",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                            alpha = 0.6f
+                        )
+                    )
+                },
+                leadingIcon = {
+                    Icon(imageVector = Icons.Default.Search, contentDescription = "搜索")
+                },
+                trailingIcon = {
+                    if (query.isNotEmpty()) {
+                        IconButton(onClick = onClear) {
+                            Icon(imageVector = Icons.Default.Clear, contentDescription = "清除")
+                        }
+                    }
+                },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                keyboardActions = KeyboardActions(onSearch = { onSearch() }),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
+                    focusedBorderColor = MaterialTheme.colorScheme.primary
+                )
+            )
+        }
+    }
+}
+@Composable
+fun HotSearchItem(
+    rank: Int,
+    text: String,
+    hotness: String,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // 排名指示器
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .size(28.dp)
+                .clip(RoundedCornerShape(4.dp))
+                .background(
+                    when (rank) {
+                        1, 2, 3 -> Color(0xFFE3F2FD)
+                        else -> Color(0xFFEEEEEE)
+                    }
+                )
+        ) {
+            Text(
+                text = rank.toString(),
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    fontWeight = FontWeight.Bold,
+                    color = if (rank <= 3) Color(0xFF1976D2) else Color.Gray
+                ),
+                textAlign = TextAlign.Center
+            )
+        }
+
+        Spacer(modifier = Modifier.width(12.dp))
+
+        // 搜索词
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodyLarge,
+            color = Color.Black,
+            modifier = Modifier.weight(1f)
+        )
+
+        // 热度
+        Text(
+            text = hotness,
+            style = MaterialTheme.typography.bodySmall,
+            color = Color.Gray
+        )
+    }
+}

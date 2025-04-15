@@ -1,0 +1,1979 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新闻APP UI设计展示</title>
+    <style>
+        /* ===== 基础样式系统 ===== */
+        :root {
+            /* 颜色系统 */
+            --color-primary: #1A73E8;           /* 主色：蓝色 */
+            --color-primary-light: #D0E3FA;     /* 主色浅色 */
+            --color-primary-dark: #0D47A1;      /* 主色深色 */
+            --color-secondary: #F25D50;         /* 辅助色：珊瑚红 */
+            --color-secondary-light: #FFEBE9;   /* 辅助色浅色 */
+            
+            /* 中性色 */
+            --color-text-primary: #202124;      /* 主要文本 */
+            --color-text-secondary: #5F6368;    /* 次要文本 */
+            --color-text-tertiary: #9AA0A6;     /* 第三级文本 */
+            --color-background: #FFFFFF;        /* 背景色 */
+            --color-surface: #F8F9FA;           /* 表面色 */
+            --color-border: #DADCE0;            /* 边框色 */
+            --color-divider: rgba(0, 0, 0, 0.08); /* 分隔线 */
+            
+            /* 间距系统 */
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --spacing-xxl: 48px;
+            
+            /* 圆角系统 */
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            --radius-circle: 50%;
+            
+            /* 阴影系统 */
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.08);
+            
+            /* 字体系统 */
+            --font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            --font-size-xs: 12px;
+            --font-size-sm: 14px;
+            --font-size-md: 16px;
+            --font-size-lg: 18px;
+            --font-size-xl: 22px;
+            --font-size-xxl: 28px;
+            
+            /* 线高系统 */
+            --line-height-tight: 1.2;
+            --line-height-normal: 1.5;
+            --line-height-relaxed: 1.7;
+            
+            /* 过渡系统 */
+            --transition-fast: 150ms ease;
+            --transition-normal: 250ms ease;
+            --transition-slow: 350ms ease;
+        }
+        
+        /* 基础重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--font-family);
+            color: var(--color-text-primary);
+            background-color: var(--color-surface);
+            line-height: var(--line-height-normal);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        /* 排版样式 */
+        h1 {
+            font-size: var(--font-size-xxl);
+            font-weight: 700;
+            line-height: var(--line-height-tight);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        h2 {
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            line-height: var(--line-height-tight);
+            margin-bottom: var(--spacing-sm);
+            color: var(--color-text-primary);
+        }
+        
+        h3 {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            line-height: var(--line-height-tight);
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        p {
+            font-size: var(--font-size-md);
+            line-height: var(--line-height-normal);
+            margin-bottom: var(--spacing-md);
+            color: var(--color-text-secondary);
+        }
+        
+        small {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+        }
+        
+        /* ===== 展示页面样式 ===== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-xl);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: var(--spacing-xxl);
+            padding-bottom: var(--spacing-lg);
+            border-bottom: 1px solid var(--color-divider);
+        }
+        
+        .header p {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .section-title {
+            margin: var(--spacing-lg) 0;
+            padding-bottom: var(--spacing-sm);
+            border-bottom: 1px solid var(--color-divider);
+        }
+        
+        /* 设计展示卡片容器 */
+        .design-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: var(--spacing-xl);
+            margin-bottom: var(--spacing-xxl);
+        }
+        
+        .design-card {
+            background-color: var(--color-background);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+        }
+        
+        .design-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .design-card-header {
+            padding: var(--spacing-md);
+            border-bottom: 1px solid var(--color-divider);
+        }
+        
+        .design-card-description {
+            padding: 0 var(--spacing-md) var(--spacing-md);
+        }
+        
+        .design-card-preview {
+            position: relative;
+            height: 600px;
+            overflow: hidden;
+            background-color: var(--color-background);
+        }
+        
+        /* ===== 手机外壳样式 ===== */
+        .phone-frame {
+            position: relative;
+            width: 320px;
+            height: 650px;
+            margin: 0 auto;
+            background-color: #111;
+            border-radius: 36px;
+            padding: 12px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.05);
+        }
+        
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background-color: var(--color-background);
+            border-radius: 24px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* ===== APP UI组件样式 ===== */
+        /* 顶部应用栏 */
+        .app-bar {
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 var(--spacing-md);
+            background-color: var(--color-background);
+            border-bottom: 1px solid var(--color-divider);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .app-bar-title {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+        }
+        
+        .app-bar-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-text-primary);
+        }
+        
+        /* 分类选择器 */
+        .category-selector {
+            display: flex;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-md);
+            overflow-x: auto;
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE and Edge */
+            background-color: var(--color-background);
+        }
+        
+        .category-selector::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
+        
+        .category-chip {
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: 100px;
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        
+        .category-chip.active {
+            background-color: var(--color-primary);
+            color: white;
+        }
+        
+        .category-chip:not(.active) {
+            background-color: var(--color-primary-light);
+            color: var(--color-primary-dark);
+        }
+        
+        /* 新闻内容区 */
+        .news-container {
+            padding: var(--spacing-md);
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+            overflow-y: auto;
+        }
+        
+        /* 头条新闻卡片 */
+        .headline-card {
+            position: relative;
+            height: 200px;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .headline-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .headline-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: var(--spacing-md);
+            background: linear-gradient(0deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
+            color: white;
+        }
+        
+        .headline-title {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            margin-bottom: var(--spacing-xs);
+            line-height: var(--line-height-tight);
+        }
+        
+        .headline-meta {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-size: var(--font-size-xs);
+            opacity: 0.8;
+        }
+        
+        /* 普通新闻卡片 */
+        .news-card {
+            display: flex;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md);
+            background-color: var(--color-background);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .news-card-content {
+            flex: 1;
+        }
+        
+        .news-card-title {
+            font-size: var(--font-size-md);
+            font-weight: 500;
+            line-height: var(--line-height-tight);
+            margin-bottom: var(--spacing-xs);
+            color: var(--color-text-primary);
+            
+            /* 文本最多显示2行 */
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .news-card-excerpt {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+            margin-bottom: var(--spacing-xs);
+            
+            /* 文本最多显示2行 */
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .news-card-meta {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+        }
+        
+        .news-card-image {
+            width: 80px;
+            height: 80px;
+            border-radius: var(--radius-sm);
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+        
+        /* 底部导航栏 */
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            height: 56px;
+            background-color: var(--color-background);
+            border-top: 1px solid var(--color-divider);
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 10;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            height: 100%;
+            color: var(--color-text-tertiary);
+            transition: color var(--transition-fast);
+        }
+        
+        .nav-item.active {
+            color: var(--color-primary);
+        }
+        
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+        
+        .nav-label {
+            font-size: var(--font-size-xs);
+            font-weight: 500;
+        }
+        
+        /* ===== 文章详情页样式 ===== */
+        .article-detail {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow-y: auto;
+        }
+        
+        .article-header {
+            position: relative;
+        }
+        
+        .article-back-button {
+            position: absolute;
+            top: var(--spacing-md);
+            left: var(--spacing-md);
+            width: 36px;
+            height: 36px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: var(--radius-circle);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .article-cover {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+        }
+        
+        .article-meta {
+            padding: var(--spacing-md);
+            border-bottom: 1px solid var(--color-divider);
+        }
+        
+        .article-title {
+            font-size: var(--font-size-xl);
+            font-weight: 700;
+            line-height: var(--line-height-tight);
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .article-source {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .article-source-image {
+            width: 20px;
+            height: 20px;
+            border-radius: var(--radius-circle);
+            object-fit: cover;
+        }
+        
+        .article-time {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+        }
+        
+        .article-content {
+            padding: var(--spacing-md);
+        }
+        
+        .article-paragraph {
+            font-size: var(--font-size-md);
+            line-height: var(--line-height-relaxed);
+            margin-bottom: var(--spacing-md);
+            color: var(--color-text-primary);
+        }
+        
+        .article-image {
+            width: 100%;
+            border-radius: var(--radius-md);
+            margin: var(--spacing-md) 0;
+        }
+        
+        .article-image-caption {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+            text-align: center;
+            margin-top: var(--spacing-xs);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .article-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .article-tag {
+            font-size: var(--font-size-xs);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            background-color: var(--color-surface);
+            border-radius: 100px;
+            color: var(--color-text-secondary);
+        }
+        
+        .related-articles {
+            padding: var(--spacing-md);
+            border-top: 1px solid var(--color-divider);
+        }
+        
+        .related-title {
+            font-size: var(--font-size-md);
+            font-weight: 600;
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .related-list {
+            display: flex;
+            gap: var(--spacing-md);
+            overflow-x: auto;
+            padding-bottom: var(--spacing-md);
+            scrollbar-width: none;
+        }
+        
+        .related-list::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .related-card {
+            flex: 0 0 220px;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .related-image {
+            width: 100%;
+            height: 124px;
+            object-fit: cover;
+        }
+        
+        .related-info {
+            padding: var(--spacing-sm);
+        }
+        
+        .related-card-title {
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+            line-height: var(--line-height-tight);
+            margin-bottom: var(--spacing-xs);
+            
+            /* 文本最多显示2行 */
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .related-meta {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+        }
+        
+        /* 分类页样式 */
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md);
+            background-color: var(--color-background);
+            border-bottom: 1px solid var(--color-divider);
+        }
+        
+        .category-title {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+        }
+        
+        .category-filter {
+            display: flex;
+            padding: var(--spacing-sm) var(--spacing-md);
+            gap: var(--spacing-md);
+            overflow-x: auto;
+            scrollbar-width: none;
+            background-color: var(--color-background);
+            border-bottom: 1px solid var(--color-divider);
+        }
+        
+        .category-filter::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .filter-option {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+            white-space: nowrap;
+            padding-bottom: var(--spacing-xs);
+            cursor: pointer;
+        }
+        
+        .filter-option.active {
+            color: var(--color-primary);
+            border-bottom: 2px solid var(--color-primary);
+            font-weight: 500;
+        }
+        
+        /* ===== 搜索页样式 ===== */
+        .search-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            background-color: var(--color-background);
+        }
+        
+        .search-header {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md);
+            border-bottom: 1px solid var(--color-divider);
+        }
+        
+        .search-input-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            background-color: var(--color-surface);
+            border-radius: 100px;
+            padding: 0 var(--spacing-md);
+            height: 40px;
+        }
+        
+        .search-input-icon {
+            color: var(--color-text-tertiary);
+            margin-right: var(--spacing-sm);
+        }
+        
+        .search-input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: var(--font-size-md);
+            color: var(--color-text-primary);
+            outline: none;
+        }
+        
+        .search-input::placeholder {
+            color: var(--color-text-tertiary);
+        }
+        
+        .search-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--spacing-md);
+        }
+        
+        .search-history {
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .search-section-title {
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            margin-bottom: var(--spacing-md);
+            color: var(--color-text-secondary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .search-clear {
+            font-size: var(--font-size-xs);
+            color: var(--color-primary);
+            font-weight: 500;
+        }
+        
+        .search-history-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-sm);
+        }
+        
+        .search-history-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            background-color: var(--color-surface);
+            border-radius: 100px;
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+        }
+        
+        .trending-searches {
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .trending-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--spacing-sm) 0;
+            border-bottom: 1px solid var(--color-divider);
+        }
+        
+        .trending-number {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--color-primary-light);
+            color: var(--color-primary-dark);
+            border-radius: var(--radius-sm);
+            font-size: var(--font-size-xs);
+            font-weight: 600;
+            margin-right: var(--spacing-sm);
+        }
+        
+        .trending-keyword {
+            font-weight: 500;
+            flex: 1;
+        }
+        
+        .trending-count {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+        }
+        
+        .search-results {
+            padding-bottom: var(--spacing-xxl);
+        }
+        
+        /* ===== 用户中心样式 ===== */
+        .profile-container {
+            height: 100%;
+            overflow-y: auto;
+            background-color: var(--color-surface);
+        }
+        
+        .profile-header {
+            background-color: var(--color-primary);
+            color: white;
+            padding: var(--spacing-lg) var(--spacing-md);
+        }
+        
+        .profile-user {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .profile-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: var(--radius-circle);
+            object-fit: cover;
+            border: 2px solid white;
+        }
+        
+        .profile-name {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+        }
+        
+        .profile-handle {
+            font-size: var(--font-size-sm);
+            opacity: 0.9;
+        }
+        
+        .profile-stats {
+            display: flex;
+            justify-content: space-around;
+            padding: var(--spacing-md) 0;
+        }
+        
+        .profile-stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .profile-stat-value {
+            font-size: var(--font-size-md);
+            font-weight: 600;
+        }
+        
+        .profile-stat-label {
+            font-size: var(--font-size-xs);
+            opacity: 0.9;
+        }
+        
+        .settings-section {
+            background-color: var(--color-background);
+            margin-bottom: var(--spacing-lg);
+            padding: var(--spacing-md);
+        }
+        
+        .settings-header {
+            font-size: var(--font-size-md);
+            font-weight: 600;
+            margin-bottom: var(--spacing-md);
+            color: var(--color-text-primary);
+        }
+        
+        .settings-item {
+            display: flex;
+            align-items: center;
+            padding: var(--spacing-md) 0;
+            border-bottom: 1px solid var(--color-divider);
+        }
+        
+        .settings-item:last-child {
+            border-bottom: none;
+        }
+        
+        .settings-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: var(--spacing-md);
+            color: var(--color-text-secondary);
+        }
+        
+        .settings-label {
+            flex: 1;
+            font-size: var(--font-size-md);
+            color: var(--color-text-primary);
+        }
+        
+        .settings-toggle {
+            position: relative;
+            width: 40px;
+            height: 22px;
+            border-radius: 100px;
+            background-color: var(--color-divider);
+        }
+        
+        .settings-toggle.active {
+            background-color: var(--color-primary);
+        }
+        
+        .settings-toggle::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background-color: white;
+            transition: transform var(--transition-fast);
+        }
+        
+        .settings-toggle.active::before {
+            transform: translateX(18px);
+        }
+        
+        .settings-value {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-tertiary);
+            margin-right: var(--spacing-xs);
+        }
+        
+        .settings-arrow {
+            color: var(--color-text-tertiary);
+        }
+        
+        .logout-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: var(--spacing-xl) var(--spacing-md);
+            padding: var(--spacing-md);
+            background-color: var(--color-secondary-light);
+            color: var(--color-secondary);
+            border-radius: var(--radius-md);
+            font-weight: 600;
+        }
+        
+        /* ===== 交互效果样式 ===== */
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: -468px 0 }
+            100% { background-position: 468px 0 }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes scale {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.95); }
+            100% { transform: scale(1); }
+        }
+        
+        .skeleton {
+            background: linear-gradient(90deg, var(--color-divider) 25%, var(--color-surface) 50%, var(--color-divider) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: var(--radius-sm);
+        }
+        
+        .ripple {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .ripple::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            transition: width 0.3s, height 0.3s, opacity 0.3s;
+        }
+        
+        .ripple:active::after {
+            width: 120%;
+            height: 120%;
+            opacity: 1;
+        }
+        
+        .fade-up {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+        
+        .button-press {
+            transition: transform 0.1s;
+        }
+        
+        .button-press:active {
+            transform: scale(0.96);
+        }
+        
+        /* 骨架屏样式 */
+        .skeleton-app-bar {
+            height: 56px;
+            width: 100%;
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .skeleton-category {
+            height: 36px;
+            width: 100%;
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .skeleton-headline {
+            height: 200px;
+            width: 100%;
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .skeleton-card {
+            height: 100px;
+            width: 100%;
+            margin-bottom: var(--spacing-md);
+        }
+        
+        /* 加载状态 */
+        .loading-state {
+            display: flex;
+            flex-direction: column;
+            padding: var(--spacing-md);
+            gap: var(--spacing-md);
+        }
+        
+        /* 主题切换效果 */
+        .theme-switch-container {
+            margin: var(--spacing-xl) 0;
+            display: flex;
+            justify-content: center;
+            gap: var(--spacing-lg);
+        }
+        
+        .theme-switch {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 160px;
+            height: 50px;
+            border-radius: var(--radius-lg);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+        }
+        
+        .theme-light {
+            background-color: #F8F9FA;
+            color: #202124;
+            border: 1px solid #DADCE0;
+        }
+        
+        .theme-dark {
+            background-color: #202124;
+            color: #F8F9FA;
+            border: 1px solid #3C4043;
+        }
+        
+        .theme-preview {
+            display: flex;
+            justify-content: center;
+            margin-top: var(--spacing-xl);
+        }
+        
+        /* 深色主题变量 */
+        [data-theme="dark"] {
+            --color-text-primary: #E8EAED;
+            --color-text-secondary: #A1A7AE;
+            --color-text-tertiary: #757A82;
+            --color-background: #121212;
+            --color-surface: #1E1E1E;
+            --color-border: #3C4043;
+            --color-divider: rgba(255, 255, 255, 0.08);
+            --color-primary-light: rgba(26, 115, 232, 0.2);
+        }
+        
+        /* 页面转场效果 */
+        .page-transition {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--color-background);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity var(--transition-normal);
+        }
+        
+        .page-transition.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        /* 文档导航 */
+        .doc-nav {
+            position: sticky;
+            top: 0;
+            background-color: var(--color-background);
+            padding: var(--spacing-md);
+            border-bottom: 1px solid var(--color-divider);
+            margin-bottom: var(--spacing-lg);
+            z-index: 10;
+        }
+        
+        .nav-list {
+            display: flex;
+            gap: var(--spacing-md);
+            overflow-x: auto;
+            padding-bottom: var(--spacing-sm);
+            scrollbar-width: none;
+        }
+        
+        .nav-list::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .nav-item {
+            padding: var(--spacing-xs) var(--spacing-md);
+            background-color: var(--color-surface);
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-sm);
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        
+        .nav-item:hover {
+            background-color: var(--color-primary-light);
+            color: var(--color-primary);
+        }
+        
+        /* 响应式设计指引 */
+        .responsive-guide {
+            background-color: var(--color-surface);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            margin: var(--spacing-xl) 0;
+        }
+        
+        .breakpoints {
+            display: flex;
+            justify-content: space-between;
+            margin: var(--spacing-lg) 0;
+        }
+        
+        .breakpoint {
+            text-align: center;
+        }
+        
+        .breakpoint-display {
+            width: 80px;
+            height: 60px;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-sm);
+            margin: 0 auto var(--spacing-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+        }
+        
+        .breakpoint-label {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-secondary);
+        }
+        
+        /* 总结部分样式 */
+        .summary {
+            background-color: var(--color-primary-light);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            margin: var(--spacing-xxl) 0;
+        }
+        
+        .summary-title {
+            color: var(--color-primary-dark);
+            font-size: var(--font-size-xl);
+            font-weight: 700;
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .summary-content {
+            color: var(--color-text-primary);
+        }
+        
+        .principles {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-lg);
+            margin: var(--spacing-xl) 0;
+        }
+        
+        .principle {
+            background-color: var(--color-surface);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            text-align: center;
+        }
+        
+        .principle-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto var(--spacing-md);
+            color: var(--color-primary);
+        }
+        
+        .principle-title {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            margin-bottom: var(--spacing-sm);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>新闻APP UI设计展示</h1>
+            <p>一个简洁、高质感的新闻应用界面设计，注重用户体验与现代美学。设计遵循Material Design原则，追求轻量感与视觉层次。</p>
+        </header>
+        
+        <h2 class="section-title">第一阶段：首页设计</h2>
+        
+        <div class="design-cards">
+            <!-- 首页设计卡片 -->
+            <div class="design-card">
+                <div class="design-card-header">
+                    <h3>新闻首页</h3>
+                </div>
+                <div class="design-card-description">
+                    <p>应用的主页面，展示头条新闻和最新资讯，包含顶部应用栏、分类选择器和新闻列表。</p>
+                </div>
+                <div class="design-card-preview">
+                    <div class="phone-frame">
+                        <div class="phone-screen">
+                            <!-- APP UI: 首页 -->
+                            <div class="app-bar">
+                                <div class="app-bar-title">新闻</div>
+                                <div class="app-bar-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="11" cy="11" r="8"></circle>
+                                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                    </svg>
+                                </div>
+                            </div>
+                            
+                            <div class="category-selector">
+                                <div class="category-chip active">推荐</div>
+                                <div class="category-chip">科技</div>
+                                <div class="category-chip">财经</div>
+                                <div class="category-chip">体育</div>
+                                <div class="category-chip">娱乐</div>
+                                <div class="category-chip">健康</div>
+                                <div class="category-chip">教育</div>
+                                <div class="category-chip">文化</div>
+                            </div>
+                            
+                            <div class="news-container">
+                                <!-- 头条新闻 -->
+                                <div class="headline-card">
+                                    <img class="headline-image" src="https://images.unsplash.com/photo-1585829365295-ab7cd400c167?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="头条新闻图片">
+                                    <div class="headline-overlay">
+                                        <div class="headline-title">新一代人工智能技术将如何改变我们的生活方式</div>
+                                        <div class="headline-meta">
+                                            <span>科技日报</span>
+                                            <span>•</span>
+                                            <span>20分钟前</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 普通新闻列表 -->
+                                <div class="news-card">
+                                    <div class="news-card-content">
+                                        <div class="news-card-title">全球气候变化会议达成新共识，195个国家签署新协议</div>
+                                        <div class="news-card-excerpt">最新气候峰会上，各国领导人就减排目标达成一致，承诺到2030年...</div>
+                                        <div class="news-card-meta">
+                                            <span>环球时报</span>
+                                            <span>•</span>
+                                            <span>2小时前</span>
+                                        </div>
+                                    </div>
+                                    <img class="news-card-image" src="https://images.unsplash.com/photo-1526400473556-aac12354f3db?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1674&q=80" alt="新闻图片">
+                                </div>
+                                
+                                <div class="news-card">
+                                    <div class="news-card-content">
+                                        <div class="news-card-title">苹果发布全新M3系列芯片，性能提升超过40%</div>
+                                        <div class="news-card-excerpt">苹果今日发布会上推出了新一代M3芯片，与上一代相比在能效和性能方面都有显著提升...</div>
+                                        <div class="news-card-meta">
+                                            <span>科技前沿</span>
+                                            <span>•</span>
+                                            <span>3小时前</span>
+                                        </div>
+                                    </div>
+                                    <img class="news-card-image" src="https://images.unsplash.com/photo-1592492152545-9695d3f473f4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="新闻图片">
+                                </div>
+                                
+                                <div class="news-card">
+                                    <div class="news-card-content">
+                                        <div class="news-card-title">研究表明每天喝咖啡可能降低心脏病风险</div>
+                                        <div class="news-card-excerpt">一项涉及超过30万人的长期研究显示，适量饮用咖啡与心血管健康存在积极相关性...</div>
+                                        <div class="news-card-meta">
+                                            <span>健康生活</span>
+                                            <span>•</span>
+                                            <span>5小时前</span>
+                                        </div>
+                                    </div>
+                                    <img class="news-card-image" src="https://images.unsplash.com/photo-1511920170033-f8396924c348?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1674&q=80" alt="新闻图片">
+                                </div>
+                                
+                            </div>
+                            
+                            <!-- 底部导航栏 -->
+                            <div class="bottom-nav">
+                                <div class="nav-item active">
+                                    <div class="nav-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                                        </svg>
+                                    </div>
+                                    <div class="nav-label">首页</div>
+                                </div>
+                                <div class="nav-item">
+                                    <div class="nav-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="nav-label">收藏</div>
+                                </div>
+                                <div class="nav-item">
+                                    <div class="nav-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                            <circle cx="12" cy="7" r="4"></circle>
+                                        </svg>
+                                    </div>
+                                    <div class="nav-label">我的</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section-footer">
+            <p>第一阶段设计完成，包含基础框架和首页界面。在接下来的阶段我们将实现更多界面设计。</p>
+        </div>
+    </div>
+    
+    <h2 class="section-title">第二阶段：文章详情与分类页</h2>
+    
+    <div class="design-cards">
+        <!-- 文章详情页设计卡片 -->
+        <div class="design-card">
+            <div class="design-card-header">
+                <h3>文章详情页</h3>
+            </div>
+            <div class="design-card-description">
+                <p>展示单篇新闻文章的详细内容，包括标题、作者、发布时间、正文和相关推荐。</p>
+            </div>
+            <div class="design-card-preview">
+                <div class="phone-frame">
+                    <div class="phone-screen">
+                        <!-- APP UI: 文章详情页 -->
+                        <div class="article-detail">
+                            <div class="article-header">
+                                <div class="article-back-button">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M19 12H5"></path>
+                                        <path d="M12 19l-7-7 7-7"></path>
+                                    </svg>
+                                </div>
+                                <img class="article-cover" src="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="文章封面">
+                            </div>
+                            
+                            <div class="article-meta">
+                                <h1 class="article-title">人工智能如何重塑未来十年的科技生态</h1>
+                                <div class="article-source">
+                                    <img class="article-source-image" src="https://randomuser.me/api/portraits/men/32.jpg" alt="来源">
+                                    <span>科技前沿 · 李明</span>
+                                </div>
+                                <div class="article-time">2023年11月15日 · 阅读 2.3万</div>
+                            </div>
+                            
+                            <div class="article-content">
+                                <p class="article-paragraph">近年来，人工智能技术已经从实验室走向广泛的商业应用，正在以前所未有的速度改变着我们的生活方式、工作方法以及整个社会的运行模式。</p>
+                                
+                                <p class="article-paragraph">专家预测，未来十年将是AI技术爆发式增长的黄金时期。从医疗诊断到自动驾驶，从个人助理到智能制造，AI的影响将无处不在。</p>
+                                
+                                <img class="article-image" src="https://images.unsplash.com/photo-1535378620166-273708d44e4c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2036&q=80" alt="AI技术应用">
+                                <div class="article-image-caption">AI技术正在各行各业得到应用</div>
+                                
+                                <p class="article-paragraph">根据最新研究报告显示，到2030年，人工智能将为全球经济贡献近16万亿美元，超过中国和印度当前GDP的总和。这意味着我们正处于一个历史性的转折点。</p>
+                                
+                                <p class="article-paragraph">然而，这种技术变革也带来了一系列挑战和担忧，包括隐私保护、就业结构调整以及可能的社会不平等加剧等问题。</p>
+                                
+                                <div class="article-tags">
+                                    <div class="article-tag">人工智能</div>
+                                    <div class="article-tag">科技趋势</div>
+                                    <div class="article-tag">未来预测</div>
+                                </div>
+                            </div>
+                            
+                            <div class="related-articles">
+                                <h3 class="related-title">相关阅读</h3>
+                                <div class="related-list">
+                                    <div class="related-card">
+                                        <img class="related-image" src="https://images.unsplash.com/photo-1531297484001-80022131f5a1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2020&q=80" alt="相关文章">
+                                        <div class="related-info">
+                                            <div class="related-card-title">量子计算：下一个技术前沿</div>
+                                            <div class="related-meta">科技前沿 · 2小时前</div>
+                                        </div>
+                                    </div>
+                                    <div class="related-card">
+                                        <img class="related-image" src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2065&q=80" alt="相关文章">
+                                        <div class="related-info">
+                                            <div class="related-card-title">AI伦理学：如何为智能机器设定道德边界</div>
+                                            <div class="related-meta">深度分析 · 昨天</div>
+                                        </div>
+                                    </div>
+                                    <div class="related-card">
+                                        <img class="related-image" src="https://images.unsplash.com/photo-1555255707-c07966088b7b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2036&q=80" alt="相关文章">
+                                        <div class="related-info">
+                                            <div class="related-card-title">机器学习在医疗领域的突破性应用</div>
+                                            <div class="related-meta">健康科技 · 3天前</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 分类页面设计卡片 -->
+        <div class="design-card">
+            <div class="design-card-header">
+                <h3>分类页面</h3>
+            </div>
+            <div class="design-card-description">
+                <p>展示特定分类下的新闻内容，包括分类标题、筛选选项和新闻列表。</p>
+            </div>
+            <div class="design-card-preview">
+                <div class="phone-frame">
+                    <div class="phone-screen">
+                        <!-- APP UI: 分类页面 -->
+                        <div class="category-header">
+                            <div class="article-back-button">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M19 12H5"></path>
+                                    <path d="M12 19l-7-7 7-7"></path>
+                                </svg>
+                            </div>
+                            <div class="category-title">科技</div>
+                        </div>
+                        
+                        <div class="category-filter">
+                            <div class="filter-option active">最新</div>
+                            <div class="filter-option">热门</div>
+                            <div class="filter-option">深度</div>
+                            <div class="filter-option">视频</div>
+                            <div class="filter-option">播客</div>
+                        </div>
+                        
+                        <div class="news-container">
+                            <div class="headline-card">
+                                <img class="headline-image" src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="头条新闻图片">
+                                <div class="headline-overlay">
+                                    <div class="headline-title">SpaceX成功发射新一代星际飞船，创造太空探索新纪录</div>
+                                    <div class="headline-meta">
+                                        <span>航天科技</span>
+                                        <span>•</span>
+                                        <span>今天</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="news-card">
+                                <div class="news-card-content">
+                                    <div class="news-card-title">苹果发布全新AR眼镜，重新定义交互体验</div>
+                                    <div class="news-card-excerpt">在备受期待的秋季发布会上，苹果推出了其首款增强现实眼镜，引发行业震动...</div>
+                                    <div class="news-card-meta">
+                                        <span>数码前沿</span>
+                                        <span>•</span>
+                                        <span>1小时前</span>
+                                    </div>
+                                </div>
+                                <img class="news-card-image" src="https://images.unsplash.com/photo-1617802690992-15d93263d3a9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="新闻图片">
+                            </div>
+                            
+                            <div class="news-card">
+                                <div class="news-card-content">
+                                    <div class="news-card-title">5G技术如何变革智慧城市建设</div>
+                                    <div class="news-card-excerpt">随着5G网络在全球范围内的部署加速，智慧城市建设进入新阶段，交通、能源等系统将实现全面升级...</div>
+                                    <div class="news-card-meta">
+                                        <span>通信科技</span>
+                                        <span>•</span>
+                                        <span>3小时前</span>
+                                    </div>
+                                </div>
+                                <img class="news-card-image" src="https://images.unsplash.com/photo-1519081811628-7a11d885bde0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1734&q=80" alt="新闻图片">
+                            </div>
+                            
+                            <div class="news-card">
+                                <div class="news-card-content">
+                                    <div class="news-card-title">全球芯片短缺可能持续到2024年，专家警告</div>
+                                    <div class="news-card-excerpt">由于需求激增和产能有限，全球半导体行业的供应紧张状况预计将延续更长时间...</div>
+                                    <div class="news-card-meta">
+                                        <span>硬件科技</span>
+                                        <span>•</span>
+                                        <span>昨天</span>
+                                    </div>
+                                </div>
+                                <img class="news-card-image" src="https://images.unsplash.com/photo-1591405351990-4726e331f141?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80" alt="新闻图片">
+                            </div>
+                            
+                            <div class="news-card">
+                                <div class="news-card-content">
+                                    <div class="news-card-title">大型科技公司争相布局元宇宙，虚拟世界竞赛加剧</div>
+                                    <div class="news-card-excerpt">从Facebook到微软，科技巨头们都在加码元宇宙项目，这场数字未来之争将如何发展？</div>
+                                    <div class="news-card-meta">
+                                        <span>互联网观察</span>
+                                        <span>•</span>
+                                        <span>前天</span>
+                                    </div>
+                                </div>
+                                <img class="news-card-image" src="https://images.unsplash.com/photo-1626379953822-baec19c3accd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80" alt="新闻图片">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="section-footer">
+        <p>第二阶段设计完成，实现了文章详情页和分类页面的设计。这些页面延续了简洁、高质感的设计语言，保持整体的视觉一致性。</p>
+    </div>
+
+    <h2 class="section-title">第三阶段：搜索与用户中心</h2>
+
+    <div class="design-cards">
+        <!-- 搜索页面设计卡片 -->
+        <div class="design-card">
+            <div class="design-card-header">
+                <h3>搜索页面</h3>
+            </div>
+            <div class="design-card-description">
+                <p>用户搜索新闻内容的界面，包括搜索框、历史搜索记录、热门搜索以及搜索结果。</p>
+            </div>
+            <div class="design-card-preview">
+                <div class="phone-frame">
+                    <div class="phone-screen">
+                        <!-- APP UI: 搜索页面 -->
+                        <div class="search-container">
+                            <div class="search-header">
+                                <div class="article-back-button">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M19 12H5"></path>
+                                        <path d="M12 19l-7-7 7-7"></path>
+                                    </svg>
+                                </div>
+                                <div class="search-input-container">
+                                    <div class="search-input-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <circle cx="11" cy="11" r="8"></circle>
+                                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                        </svg>
+                                    </div>
+                                    <input type="text" class="search-input" placeholder="搜索新闻、话题或关键词">
+                                </div>
+                            </div>
+                            <div class="search-content">
+                                <div class="search-history">
+                                    <div class="search-section-title">
+                                        <span>搜索历史</span>
+                                        <span class="search-clear">清除</span>
+                                    </div>
+                                    <div class="search-history-items">
+                                        <div class="search-history-item">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <circle cx="12" cy="12" r="10"></circle>
+                                                <polyline points="12 6 12 12 16 14"></polyline>
+                                            </svg>
+                                            <span>人工智能</span>
+                                        </div>
+                                        <div class="search-history-item">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <circle cx="12" cy="12" r="10"></circle>
+                                                <polyline points="12 6 12 12 16 14"></polyline>
+                                            </svg>
+                                            <span>可持续发展</span>
+                                        </div>
+                                        <div class="search-history-item">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <circle cx="12" cy="12" r="10"></circle>
+                                                <polyline points="12 6 12 12 16 14"></polyline>
+                                            </svg>
+                                            <span>元宇宙</span>
+                                        </div>
+                                        <div class="search-history-item">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <circle cx="12" cy="12" r="10"></circle>
+                                                <polyline points="12 6 12 12 16 14"></polyline>
+                                            </svg>
+                                            <span>气候变化</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="trending-searches">
+                                    <div class="search-section-title">
+                                        <span>热门搜索</span>
+                                    </div>
+                                    <div class="trending-item">
+                                        <div class="trending-number">1</div>
+                                        <div class="trending-keyword">数字人民币</div>
+                                        <div class="trending-count">256万热度</div>
+                                    </div>
+                                    <div class="trending-item">
+                                        <div class="trending-number">2</div>
+                                        <div class="trending-keyword">碳中和</div>
+                                        <div class="trending-count">198万热度</div>
+                                    </div>
+                                    <div class="trending-item">
+                                        <div class="trending-number">3</div>
+                                        <div class="trending-keyword">半导体芯片</div>
+                                        <div class="trending-count">163万热度</div>
+                                    </div>
+                                    <div class="trending-item">
+                                        <div class="trending-number">4</div>
+                                        <div class="trending-keyword">量子通信</div>
+                                        <div class="trending-count">129万热度</div>
+                                    </div>
+                                    <div class="trending-item">
+                                        <div class="trending-number">5</div>
+                                        <div class="trending-keyword">太空旅游</div>
+                                        <div class="trending-count">95万热度</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 用户中心设计卡片 -->
+        <div class="design-card">
+            <div class="design-card-header">
+                <h3>用户中心</h3>
+            </div>
+            <div class="design-card-description">
+                <p>用户个人中心和设置页面，包含用户信息、阅读统计和各种设置选项。</p>
+            </div>
+            <div class="design-card-preview">
+                <div class="phone-frame">
+                    <div class="phone-screen">
+                        <!-- APP UI: 用户中心 -->
+                        <div class="profile-container">
+                            <div class="profile-header">
+                                <div class="profile-user">
+                                    <img class="profile-avatar" src="https://randomuser.me/api/portraits/women/44.jpg" alt="用户头像">
+                                    <div>
+                                        <div class="profile-name">张丽</div>
+                                        <div class="profile-handle">@zhangli</div>
+                                    </div>
+                                </div>
+                                <div class="profile-stats">
+                                    <div class="profile-stat">
+                                        <div class="profile-stat-value">28</div>
+                                        <div class="profile-stat-label">收藏</div>
+                                    </div>
+                                    <div class="profile-stat">
+                                        <div class="profile-stat-value">154</div>
+                                        <div class="profile-stat-label">阅读</div>
+                                    </div>
+                                    <div class="profile-stat">
+                                        <div class="profile-stat-value">5</div>
+                                        <div class="profile-stat-label">订阅</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="settings-section">
+                                <div class="settings-header">阅读设置</div>
+                                <div class="settings-item">
+                                    <div class="settings-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
+                                            <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path>
+                                            <path d="M2 2l7.586 7.586"></path>
+                                            <circle cx="11" cy="11" r="2"></circle>
+                                        </svg>
+                                    </div>
+                                    <div class="settings-label">字体大小</div>
+                                    <div class="settings-value">中等</div>
+                                    <div class="settings-arrow">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="9 18 15 12 9 6"></polyline>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="settings-item">
+                                    <div class="settings-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <circle cx="12" cy="12" r="5"></circle>
+                                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                                        </svg>
+                                    </div>
+                                    <div class="settings-label">夜间模式</div>
+                                    <div class="settings-toggle active"></div>
+                                </div>
+                                <div class="settings-item">
+                                    <div class="settings-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
+                                            <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path>
+                                            <path d="M2 2l7.586 7.586"></path>
+                                            <circle cx="11" cy="11" r="2"></circle>
+                                        </svg>
+                                    </div>
+                                    <div class="settings-label">阅读时长提醒</div>
+                                    <div class="settings-toggle"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="settings-section">
+                                <div class="settings-header">内容与通知</div>
+                                <div class="settings-item">
+                                    <div class="settings-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                            <polyline points="22,6 12,13 2,6"></polyline>
+                                        </svg>
+                                    </div>
+                                    <div class="settings-label">新闻推送</div>
+                                    <div class="settings-toggle active"></div>
+                                </div>
+                                <div class="settings-item">
+                                    <div class="settings-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="settings-label">内容偏好设置</div>
+                                    <div class="settings-arrow">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="9 18 15 12 9 6"></polyline>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="settings-item">
+                                    <div class="settings-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="23 4 23 10 17 10"></polyline>
+                                            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="section-title">第四阶段：交互效果与主题切换</h2>
+
+    <div class="doc-nav">
+        <div class="nav-list">
+            <div class="nav-item">首页设计</div>
+            <div class="nav-item">文章详情</div>
+            <div class="nav-item">分类页面</div>
+            <div class="nav-item">搜索功能</div>
+            <div class="nav-item">用户中心</div>
+            <div class="nav-item">交互效果</div>
+            <div class="nav-item">主题切换</div>
+            <div class="nav-item">响应式设计</div>
+        </div>
+    </div>
+
+    <div class="design-cards">
+        <!-- 加载状态设计卡片 -->
+        <div class="design-card">
+            <div class="design-card-header">
+                <h3>加载状态</h3>
+            </div>
+            <div class="design-card-description">
+                <p>使用骨架屏(Skeleton Screen)代替传统加载圈，提供更好的视觉过渡体验。</p>
+            </div>
+            <div class="design-card-preview">
+                <div class="phone-frame">
+                    <div class="phone-screen">
+                        <!-- APP UI: 加载状态 -->
+                        <div class="loading-state">
+                            <div class="skeleton skeleton-app-bar"></div>
+                            <div class="skeleton skeleton-category"></div>
+                            <div class="skeleton skeleton-headline"></div>
+                            <div class="skeleton skeleton-card"></div>
+                            <div class="skeleton skeleton-card"></div>
+                            <div class="skeleton skeleton-card"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 主题切换设计卡片 -->
+        <div class="design-card">
+            <div class="design-card-header">
+                <h3>主题切换</h3>
+            </div>
+            <div class="design-card-description">
+                <p>支持浅色和深色两种主题模式，适应不同环境和用户偏好。</p>
+            </div>
+            <div class="design-card-preview">
+                <div class="phone-frame">
+                    <div class="phone-screen" data-theme="dark">
+                        <!-- APP UI: 深色主题 -->
+                        <div class="app-bar">
+                            <div class="app-bar-title">新闻</div>
+                            <div class="app-bar-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
+                            </div>
+                        </div>
+                        
+                        <div class="category-selector">
+                            <div class="category-chip active">推荐</div>
+                            <div class="category-chip">科技</div>
+                            <div class="category-chip">财经</div>
+                            <div class="category-chip">体育</div>
+                        </div>
+                        
+                        <div class="news-container">
+                            <div class="headline-card">
+                                <img class="headline-image" src="https://images.unsplash.com/photo-1585829365295-ab7cd400c167?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="头条新闻图片">
+                                <div class="headline-overlay">
+                                    <div class="headline-title">新一代人工智能技术将如何改变我们的生活方式</div>
+                                    <div class="headline-meta">
+                                        <span>科技日报</span>
+                                        <span>•</span>
+                                        <span>20分钟前</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="news-card">
+                                <div class="news-card-content">
+                                    <div class="news-card-title">全球气候变化会议达成新共识，195个国家签署新协议</div>
+                                    <div class="news-card-excerpt">最新气候峰会上，各国领导人就减排目标达成一致，承诺到2030年...</div>
+                                    <div class="news-card-meta">
+                                        <span>环球时报</span>
+                                        <span>•</span>
+                                        <span>2小时前</span>
+                                    </div>
+                                </div>
+                                <img class="news-card-image" src="https://images.unsplash.com/photo-1526400473556-aac12354f3db?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1674&q=80" alt="新闻图片">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="theme-switch-container">
+        <div class="theme-switch theme-light button-press">浅色主题</div>
+        <div class="theme-switch theme-dark button-press">深色主题</div>
+    </div>
+
+    <div class="responsive-guide">
+        <h3>响应式设计指南</h3>
+        <p>应用界面设计考虑了不同屏幕尺寸的适配，确保在各种设备上都能提供最佳体验。</p>
+        
+        <div class="breakpoints">
+            <div class="breakpoint">
+                <div class="breakpoint-display">320px</div>
+                <div class="breakpoint-label">小屏手机</div>
+            </div>
+            <div class="breakpoint">
+                <div class="breakpoint-display">375px</div>
+                <div class="breakpoint-label">标准手机</div>
+            </div>
+            <div class="breakpoint">
+                <div class="breakpoint-display">414px</div>
+                <div class="breakpoint-label">大屏手机</div>
+            </div>
+            <div class="breakpoint">
+                <div class="breakpoint-display">768px</div>
+                <div class="breakpoint-label">平板设备</div>
+            </div>
+            <div class="breakpoint">
+                <div class="breakpoint-display">1024px+</div>
+                <div class="breakpoint-label">桌面设备</div>
+            </div>
+        </div>
+        
+        <p>在较小屏幕上，界面元素自动调整，保持内容的可读性和可交互性。较大屏幕则利用额外空间提供更丰富的布局和内容展示。</p>
+    </div>
+
+    <div class="summary">
+        <h2 class="summary-title">设计总结</h2>
+        <div class="summary-content">
+            <p>本设计方案遵循极简主义和高质感的设计原则，创建了一个现代化、用户友好的新闻应用界面。通过精心设计的色彩系统、排版层级和交互细节，为用户提供流畅而愉悦的阅读体验。</p>
+            
+            <div class="principles">
+                <div class="principle">
+                    <div class="principle-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                            <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path>
+                            <path d="M2 2l7.586 7.586"></path>
+                            <circle cx="11" cy="11" r="2"></circle>
+                        </svg>
+                    </div>
+                    <h3 class="principle-title">模块化设计</h3>
+                    <p>使用可复用的组件构建界面，确保一致性和可扩展性。</p>
+                </div>
+                
+                <div class="principle">
+                    <div class="principle-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+                        </svg>
+                    </div>
+                    <h3 class="principle-title">用户导向</h3>
+                    <p>以用户需求为中心，优化内容展示和功能访问路径。</p>
+                </div>
+                
+                <div class="principle">
+                    <div class="principle-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </svg>
+                    </div>
+                    <h3 class="principle-title">可定制化</h3>
+                    <p>提供丰富的设置选项，让用户可以个性化自己的阅读体验。</p>
+                </div>
+                
+                <div class="principle">
+                    <div class="principle-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M15.6 11.6L22 5"></path>
+                            <path d="M7 21l-3.3-3.3a2.4 2.4 0 0 1 0-3.4l10.6-10.6a2.4 2.4 0 0 1 3.4 0l3.3 3.3a2.4 2.4 0 0 1 0 3.4L10.4 21a2.4 2.4 0 0 1-3.4 0z"></path>
+                            <path d="M13.4 6.8l3.8 3.8"></path>
+                            <path d="M15.2 14.8l-8.4 3.2 3.2-8.4"></path>
+                        </svg>
+                    </div>
+                    <h3 class="principle-title">视觉质感</h3>
+                    <p>通过精致的细节处理和视觉层次，营造高品质的用户界面体验。</p>
+                </div>
+            </div>
+            
+            <p>本设计适用于各种屏幕尺寸和使用场景，同时提供了白天和夜间两种模式，满足不同用户的需求。通过精心设计的交互反馈和过渡动画，为用户创造流畅自然的使用体验。</p>
+        </div>
+    </div>
+
+    <script>
+        // 简单的主题切换功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const lightThemeBtn = document.querySelector('.theme-light');
+            const darkThemeBtn = document.querySelector('.theme-dark');
+            const phoneScreen = document.querySelector('[data-theme="dark"]');
+            
+            lightThemeBtn.addEventListener('click', function() {
+                phoneScreen.removeAttribute('data-theme');
+            });
+            
+            darkThemeBtn.addEventListener('click', function() {
+                phoneScreen.setAttribute('data-theme', 'dark');
+            });
+            
+            // 添加按压效果到所有可点击元素
+            const clickableElements = document.querySelectorAll('.category-chip, .news-card, .headline-card, .nav-item');
+            clickableElements.forEach(element => {
+                element.classList.add('ripple');
+            });
+        });
+    </script>
+</body>
+</html>
