@@ -27,12 +27,17 @@ class NewsRepositoryImpl @Inject constructor(
                 newsApi.getLatestNews()
             } catch (e: IOException) {
                 e.printStackTrace()
-                emit(Resource.Error("Couldn't load data"))
+                emit(Resource.Error("无法连接服务器，请检查网络连接"))
                 emit(Resource.Loading(false))
                 return@flow
             } catch (e: HttpException) {
                 e.printStackTrace()
-                emit(Resource.Error("Couldn't load data"))
+                emit(Resource.Error("服务器返回错误: ${e.code()}"))
+                emit(Resource.Loading(false))
+                return@flow
+            } catch (e: Exception) {
+                e.printStackTrace()
+                emit(Resource.Error("加载过程中发生错误: ${e.message}"))
                 emit(Resource.Loading(false))
                 return@flow
             }
@@ -70,7 +75,6 @@ class NewsRepositoryImpl @Inject constructor(
                 emit(Resource.Loading(false))
                 return@flow
             }
-            val nextPage = newsResponse.nextPage
             val newsDtoList = newsResponse.results
             newsDtoList?.let { newsList ->
                 if (newsList.isNotEmpty()) {
@@ -102,14 +106,19 @@ class NewsRepositoryImpl @Inject constructor(
                     language = language,
                     country = country
                 )
-            } catch (e: IOException) {
+            }  catch (e: IOException) {
                 e.printStackTrace()
-                emit(Resource.Error("Couldn't load data"))
+                emit(Resource.Error("无法连接服务器，请检查网络连接"))
                 emit(Resource.Loading(false))
                 return@flow
             } catch (e: HttpException) {
                 e.printStackTrace()
-                emit(Resource.Error("Couldn't load data"))
+                emit(Resource.Error("服务器返回错误: ${e.code()}"))
+                emit(Resource.Loading(false))
+                return@flow
+            } catch (e: Exception) {
+                e.printStackTrace()
+                emit(Resource.Error("加载过程中发生错误: ${e.message}"))
                 emit(Resource.Loading(false))
                 return@flow
             }
@@ -143,14 +152,19 @@ class NewsRepositoryImpl @Inject constructor(
                     language = language,
                     country = country
                 )
-            } catch (e: IOException) {
+            }  catch (e: IOException) {
                 e.printStackTrace()
-                emit(Resource.Error("Couldn't load data"))
+                emit(Resource.Error("无法连接服务器，请检查网络连接"))
                 emit(Resource.Loading(false))
                 return@flow
             } catch (e: HttpException) {
                 e.printStackTrace()
-                emit(Resource.Error("Couldn't load data"))
+                emit(Resource.Error("服务器返回错误: ${e.code()}"))
+                emit(Resource.Loading(false))
+                return@flow
+            } catch (e: Exception) {
+                e.printStackTrace()
+                emit(Resource.Error("加载过程中发生错误: ${e.message}"))
                 emit(Resource.Loading(false))
                 return@flow
             }

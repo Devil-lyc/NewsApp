@@ -22,6 +22,7 @@ class HomeViewModel @Inject constructor(
     init {
         load()
     }
+    
     private fun load() {
         loadAllNews()
 //        loadNewsByCategory("technology")

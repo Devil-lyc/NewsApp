@@ -45,6 +45,8 @@ dependencies {
     // Timber for logging
     implementation("com.jakewharton.timber:timber:5.0.1")
 
+    // WebView for Compose
+    implementation("com.google.accompanist:accompanist-webview:0.32.0")
 
     //Navigation
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")

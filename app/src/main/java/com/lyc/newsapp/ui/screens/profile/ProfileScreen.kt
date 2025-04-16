@@ -32,21 +32,23 @@ fun ProfileScreen() {
     val scrollState = rememberScrollState()
     
     Scaffold(
-        topBar = {
-            SmallTopAppBar(
-                title = {
-                    Text(
-                        text = "个人中心",
-                        style = MaterialTheme.typography.headlineSmall.copy(
-                            fontWeight = FontWeight.Bold
-                        )
-                    )
-                },
-                colors = TopAppBarDefaults.smallTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
-                )
-            )
-        }
+//        topBar = {
+//            CenterAlignedTopAppBar(
+//                title = {
+//                    Text(
+//                        text = "个人中心",
+//                        style = MaterialTheme.typography.headlineSmall.copy(
+//                            fontWeight = FontWeight.Bold
+//                        )
+//                    )
+//                },
+//                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+//                    containerColor = MaterialTheme.colorScheme.background
+//                ),
+//                windowInsets = WindowInsets.statusBars
+//            )
+//        },
+        contentWindowInsets = WindowInsets.statusBars
     ) { paddingValues ->
         Column(
             modifier = Modifier

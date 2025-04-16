@@ -64,22 +64,68 @@ fun SearchScreen(
     }
 
     Scaffold(
-            topBar = {
-                SearchBar(
-                    query = searchQuery,
-                    onQueryChange = { searchQuery = it },
-                    onSearch = { performSearch() },
-                    onClear = {
-                        searchQuery = ""
-                        isSearchActive = false
-                    }
-                )
+        topBar = {
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = MaterialTheme.colorScheme.background,
+                contentColor = MaterialTheme.colorScheme.onBackground,
+                tonalElevation = 0.dp
+            ) {
+                Box(
+                    modifier = Modifier
+                        .windowInsetsPadding(WindowInsets.statusBars)
+                ) {
+                    SearchBar(
+                        query = searchQuery,
+                        onQueryChange = { searchQuery = it },
+                        onSearch = { performSearch() },
+                        onClear = {
+                            searchQuery = ""
+                            isSearchActive = false
+                        }
+                    )
+                }
             }
+        },
+        contentWindowInsets = WindowInsets.statusBars
     ) { paddingValues ->
-        if (isSearchActive) {
-            // 处理加载状态
-            if (searchUiState.value.isLoading) {
-                // 加载中状态
+        when {
+            // 初始搜索页面
+            !isSearchActive -> {
+                Column(modifier = Modifier.fillMaxSize().padding(paddingValues).padding(16.dp)) {
+                    // 热门搜索
+                    Text(
+                        text = "热门搜索", 
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // 热门搜索词组
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        hotSearchTerms.forEach { (term, hotness, rank) ->
+                            HotSearchItem(
+                                rank = rank,
+                                text = term,
+                                hotness = hotness,
+                                onClick = {
+                                    searchQuery = term
+                                    performSearch()
+                                }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
+            }
+            
+            // 搜索中状态
+            searchUiState.value.isLoading -> {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -102,33 +148,10 @@ fun SearchScreen(
                         )
                     }
                 }
-            } else if (searchUiState.value.searchResults.isNotEmpty()) {
-                // 有搜索结果
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues),
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    item {
-                        Text(
-                            text = "搜索结果: ${searchUiState.value.searchResults.size}",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                    }
-
-                    items(searchUiState.value.searchResults) { news ->
-                        NewsCard(
-                            news = news,
-                            onArticleClick = onArticleClick
-                        )
-                    }
-                }
-            } else if (searchUiState.value.error != null) {
-                // 错误状态
+            }
+            
+            // 错误状态
+            searchUiState.value.error != null -> {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -159,8 +182,10 @@ fun SearchScreen(
                         )
                     }
                 }
-            } else {
-                // 无搜索结果
+            }
+            
+            // 无搜索结果
+            searchUiState.value.searchResults.isEmpty() -> {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -191,37 +216,24 @@ fun SearchScreen(
                     }
                 }
             }
-        } else {
-            // 初始搜索页面
-            Column(modifier = Modifier.fillMaxSize().padding(paddingValues).padding(16.dp)) {
-                // 热门搜索
-                Text(
-                    text = "热门搜索", 
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.primary
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // 热门搜索词组
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
+            
+            // 有搜索结果
+            else -> {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
+                    contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    hotSearchTerms.forEach { (term, hotness, rank) ->
-                        HotSearchItem(
-                            rank = rank,
-                            text = term,
-                            hotness = hotness,
-                            onClick = {
-                                searchQuery = term
-                                performSearch()
-                            }
+                    items(searchUiState.value.searchResults) { news ->
+                        NewsCard(
+                            news = news,
+                            onArticleClick = onArticleClick,
+                            modifier = Modifier.fillMaxWidth()
                         )
                     }
                 }
-
-                Spacer(modifier = Modifier.height(24.dp))
             }
         }
     }

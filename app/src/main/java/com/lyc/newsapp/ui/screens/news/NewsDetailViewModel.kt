@@ -27,6 +27,9 @@ class NewsDetailViewModel @Inject constructor(
     }
     private fun loadNewsDetail(newsId: String){
         viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(
+                isLoading = true,
+            )
             newsRepository.getNewsById(id = newsId)
                 .collect{ result ->
                     when(result){
@@ -46,7 +49,7 @@ class NewsDetailViewModel @Inject constructor(
                         }
                         is Resource.Loading -> {
                             _uiState.value = _uiState.value.copy(
-                                isLoading = true,
+                                isLoading = result.isLoading,
                             )
                         }
                     }

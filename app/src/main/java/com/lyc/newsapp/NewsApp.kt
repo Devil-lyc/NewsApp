@@ -1,6 +1,11 @@
 package com.lyc.newsapp
 
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Home
@@ -15,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -100,7 +106,10 @@ fun NewsApp(navController: NavHostController) {
             } == true
             
             if (shouldShowBottomBar) {
-                NavigationBar {
+                NavigationBar(
+                    tonalElevation = 0.dp,
+                    windowInsets = WindowInsets(0,0,0,0)
+                ) {
                     bottomNavItems.forEach { screen ->
                         val selected = currentDestination?.hierarchy?.any { 
                             it.route == screen.route 
@@ -117,13 +126,10 @@ fun NewsApp(navController: NavHostController) {
                             selected = selected,
                             onClick = {
                                 navController.navigate(screen.route) {
-                                    // 防止在底部导航栏中创建多个后退栈
                                     popUpTo(navController.graph.findStartDestination().id) {
                                         saveState = true
                                     }
-                                    // 避免重复创建相同目标的多个副本
                                     launchSingleTop = true
-                                    // 切换标签时恢复状态
                                     restoreState = true
                                 }
                             }
@@ -131,7 +137,8 @@ fun NewsApp(navController: NavHostController) {
                     }
                 }
             }
-        }
+        },
+        contentWindowInsets = WindowInsets.navigationBars
     ) { paddingValues ->
         NavHost(
             navController = navController,

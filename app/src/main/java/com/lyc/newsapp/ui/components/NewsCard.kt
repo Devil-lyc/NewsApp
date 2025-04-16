@@ -155,18 +155,16 @@ fun HeadlineCard(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             // 添加作者信息（如果有）
-                            if (news.author != null) {
-                                Text(
-                                    text = news.author,
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                                Text(
-                                    text = " • ",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
+                            Text(
+                                text = news.author,
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Text(
+                                text = " • ",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
                             Text(
                                 text = formatDate(news.publishedAt),
                                 style = MaterialTheme.typography.labelSmall,

@@ -22,7 +22,7 @@ fun CategoryTabs(
 ) {
     ScrollableTabRow(
         selectedTabIndex = categories.indexOf(selectedCategory),
-        modifier = modifier,
+        modifier = modifier.padding(top = 5.dp),
         edgePadding = 16.dp,
         containerColor = MaterialTheme.colorScheme.background,
         contentColor = MaterialTheme.colorScheme.primary,
