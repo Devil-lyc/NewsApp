@@ -34,4 +34,12 @@ data class News(
     val videoUrl: String,
 
     val isSaved: Boolean = false,
-) 
+)
+//val id: String,
+//val title: String,
+//val description: String,
+//val source_name: String,
+//val publishedAt: String,
+//val category: String,
+//val imageUrl: String,
+//val author: String,

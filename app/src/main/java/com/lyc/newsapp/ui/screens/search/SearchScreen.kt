@@ -30,7 +30,7 @@ import com.lyc.newsapp.ui.components.NewsCard
 /** 搜索界面 */
 @Composable
 fun SearchScreen(
-    onArticleClick: (News) -> Unit
+    onArticleClick: (newsId:String) -> Unit
 ) {
     val searchViewModel = hiltViewModel<SearchViewModel>()
     val searchUiState = searchViewModel.uiState.collectAsState()

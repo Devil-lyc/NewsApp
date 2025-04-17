@@ -24,7 +24,7 @@ import com.lyc.newsapp.ui.components.HeadlineCard
  */
 @Composable
 fun HomeScreen(
-    onArticleClick: (News) -> Unit
+    onArticleClick: (newsId: String) -> Unit
 ) {
     // 状态
     val homeViewModel = hiltViewModel<HomeViewModel>()

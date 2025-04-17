@@ -1,6 +1,7 @@
 package com.lyc.newsapp
 
 import android.app.Application
+import com.tencent.mmkv.MMKV
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
 
@@ -17,8 +18,11 @@ class NewsApplication : Application() {
         
         // 初始化日志系统
 //        if (BuildConfig.DEBUG) {
-            Timber.plant(Timber.DebugTree())
-            Timber.d("新闻App初始化")
+//            Timber.plant(Timber.DebugTree())
 //        }
+        
+        // 初始化MMKV
+        val rootDir = MMKV.initialize(this)
+        Timber.d("MMKV已初始化，存储路径: $rootDir")
     }
 } 

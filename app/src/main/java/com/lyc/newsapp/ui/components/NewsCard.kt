@@ -18,13 +18,13 @@ import com.lyc.newsapp.ui.utils.formatDate
 @Composable
 fun NewsCard(
     news: News,
-    onArticleClick: (News) -> Unit,
+    onArticleClick: (newsId:String) -> Unit,
     modifier: Modifier = Modifier
 ) {
    Card(
        modifier = modifier
                    .fillMaxWidth()
-                   .clickable { onArticleClick(news) },
+                   .clickable { onArticleClick(news.id) },
        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
    ) {
        Row(
@@ -103,11 +103,11 @@ fun NewsCard(
 @Composable
 fun HeadlineCard(
     news: News,
-    onArticleClick: (News) -> Unit,
+    onArticleClick: (newsId:String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = modifier.fillMaxWidth().clickable { onArticleClick(news) },
+        modifier = modifier.fillMaxWidth().clickable { onArticleClick(news.id) },
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column { // 头条图片

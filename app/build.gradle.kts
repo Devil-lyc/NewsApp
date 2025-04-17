@@ -45,6 +45,9 @@ dependencies {
     // Timber for logging
     implementation("com.jakewharton.timber:timber:5.0.1")
 
+    // MMKV for key-value storage
+    implementation("com.tencent:mmkv:1.3.1")
+
     // WebView for Compose
     implementation("com.google.accompanist:accompanist-webview:0.32.0")
 

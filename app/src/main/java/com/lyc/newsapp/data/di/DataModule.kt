@@ -13,8 +13,15 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
+import javax.inject.Qualifier
 import javax.inject.Singleton
 
+/**
+ * 新闻API相关限定符
+ */
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class NewsClient
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -34,6 +41,7 @@ class DataModule {
         return ApiKeyInterceptor(apiKeyConfig.getNewsApiKey())
     }
 
+    @NewsClient
     @Provides
     @Singleton
     fun provideOkHttpClient(
@@ -50,7 +58,7 @@ class DataModule {
 
     @Provides
     @Singleton
-    fun provideNewsApi(client: OkHttpClient): NewsApi {
+    fun provideNewsApi(@NewsClient client: OkHttpClient): NewsApi {
         return Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(client)

@@ -10,6 +10,8 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,14 +24,59 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.lyc.newsapp.ui.utils.AsyncImageWithPlaceholder
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.lyc.newsapp.ui.screens.auth.AuthState
+import com.lyc.newsapp.ui.screens.auth.AuthViewModel
 
 /**
  * 个人资料界面
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(
+    onLogout: () -> Unit,
+    viewModel: AuthViewModel = hiltViewModel()
+) {
     val scrollState = rememberScrollState()
+    val authState by viewModel.authState.collectAsState()
+    
+    // 添加日志跟踪退出登录流程
+    LaunchedEffect(Unit) {
+        android.util.Log.d("ProfileScreen", "初始化: isLoggedIn=${authState.isLoggedIn}")
+    }
+    
+    // 监听登录状态变化
+    LaunchedEffect(authState.isLoggedIn) {
+        android.util.Log.d("ProfileScreen", "登录状态变化: isLoggedIn=${authState.isLoggedIn}")
+    }
+    
+    // 控制确认对话框的显示
+    var showLogoutDialog by remember { mutableStateOf(false) }
+    
+    // 退出登录确认对话框
+    if (showLogoutDialog) {
+        AlertDialog(
+            onDismissRequest = { showLogoutDialog = false },
+            title = { Text("退出登录") },
+            text = { Text("确定要退出登录吗？") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showLogoutDialog = false
+                        android.util.Log.d("ProfileScreen", "用户确认退出登录")
+                        onLogout()
+                    }
+                ) {
+                    Text("确定")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showLogoutDialog = false }) {
+                    Text("取消")
+                }
+            }
+        )
+    }
     
     Scaffold(
 //        topBar = {
@@ -57,7 +104,8 @@ fun ProfileScreen() {
                 .verticalScroll(scrollState)
         ) {
             // 用户资料卡片
-            UserProfileCard()
+
+            UserProfileCard(authState)
             
             Spacer(modifier = Modifier.height(24.dp))
             
@@ -67,9 +115,12 @@ fun ProfileScreen() {
             Spacer(modifier = Modifier.height(24.dp))
             
             // 应用信息
-            AppInfoSection()
-            
-            Spacer(modifier = Modifier.height(32.dp))
+            AppInfoSection(
+                onLogout = { showLogoutDialog = true }
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
         }
     }
 }
@@ -78,7 +129,9 @@ fun ProfileScreen() {
  * 用户资料卡片
  */
 @Composable
-fun UserProfileCard() {
+fun UserProfileCard(
+    authState: AuthState
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -106,7 +159,7 @@ fun UserProfileCard() {
             
             // 用户名
             Text(
-                text = "张三",
+                text = authState.user?.username ?:"未设置",
                 style = MaterialTheme.typography.titleLarge
             )
             
@@ -114,7 +167,7 @@ fun UserProfileCard() {
             
             // 用户简介
             Text(
-                text = "新闻爱好者",
+                text = authState.user?.email ?:"未设置",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -280,7 +333,9 @@ fun SettingItem(
  * 应用信息部分
  */
 @Composable
-fun AppInfoSection() {
+fun AppInfoSection(
+    onLogout: () -> Unit,
+) {
     Column(
         modifier = Modifier.padding(horizontal = 16.dp)
     ) {
@@ -332,7 +387,7 @@ fun AppInfoSection() {
         
         // 退出登录按钮
         Button(
-            onClick = { /* 暂不实现 */ },
+            onClick = onLogout,
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.errorContainer,
