@@ -1,6 +1,7 @@
 package com.lyc.newsapp.ui.screens.profile
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -25,8 +26,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.lyc.newsapp.ui.utils.AsyncImageWithPlaceholder
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.lyc.newsapp.data.preferences.ThemeMode
 import com.lyc.newsapp.ui.screens.auth.AuthState
 import com.lyc.newsapp.ui.screens.auth.AuthViewModel
+import com.lyc.newsapp.ui.theme.ThemeViewModel
 
 /**
  * 个人资料界面
@@ -35,10 +38,12 @@ import com.lyc.newsapp.ui.screens.auth.AuthViewModel
 @Composable
 fun ProfileScreen(
     onLogout: () -> Unit,
-    viewModel: AuthViewModel = hiltViewModel()
+    authViewModel: AuthViewModel = hiltViewModel(),
+    themeViewModel: ThemeViewModel = hiltViewModel()
 ) {
     val scrollState = rememberScrollState()
-    val authState by viewModel.authState.collectAsState()
+    val authState by authViewModel.authState.collectAsState()
+    val isDarkMode by themeViewModel.isDarkMode.collectAsState()
     
     // 添加日志跟踪退出登录流程
     LaunchedEffect(Unit) {
@@ -107,10 +112,13 @@ fun ProfileScreen(
 
             UserProfileCard(authState)
             
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(18.dp))
             
             // 设置列表
-            SettingsList()
+            SettingsList(
+                isDarkMode = isDarkMode,
+                onDarkModeChange = { themeViewModel.toggleDarkMode(it) }
+            )
             
             Spacer(modifier = Modifier.height(24.dp))
             
@@ -215,7 +223,10 @@ fun StatItem(title: String, value: String) {
  * 设置列表
  */
 @Composable
-fun SettingsList() {
+fun SettingsList(
+    isDarkMode: Boolean,
+    onDarkModeChange: (Boolean) -> Unit
+) {
     Column(
         modifier = Modifier.padding(horizontal = 16.dp)
     ) {
@@ -239,11 +250,10 @@ fun SettingsList() {
             subtitle = "接收重要通知"
         )
         
-        SettingItem(
-            icon = Icons.Outlined.DarkMode,
-            title = "深色模式",
-            subtitle = "跟随系统",
-            hasSwitch = true
+        // 主题模式设置
+        DarkModeSettingItem(
+            isDarkMode = isDarkMode,
+            onDarkModeChange = onDarkModeChange
         )
         
         SettingItem(
@@ -321,6 +331,56 @@ fun SettingItem(
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
+    }
+    
+    Divider(
+        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f),
+        thickness = 1.dp
+    )
+}
+
+/**
+ * 深色模式设置项
+ */
+@Composable
+fun DarkModeSettingItem(
+    isDarkMode: Boolean,
+    onDarkModeChange: (Boolean) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = Icons.Outlined.DarkMode,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(24.dp)
+        )
+        
+        Spacer(modifier = Modifier.width(16.dp))
+        
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(
+                text = "深色模式",
+                style = MaterialTheme.typography.titleMedium
+            )
+            
+            Text(
+                text = if (isDarkMode) "已开启" else "已关闭",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+        
+        Switch(
+            checked = isDarkMode,
+            onCheckedChange = onDarkModeChange
+        )
     }
     
     Divider(

@@ -2,15 +2,24 @@ package com.lyc.newsapp.data.local
 
 import com.lyc.newsapp.data.model.User
 import com.tencent.mmkv.MMKV
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * 会话管理器 - 使用MMKV管理用户会话信息
+ * 会话管理器 - 使用MMKV管理用户会话信息和令牌
+ * 整合了原TokenManager的功能
  */
 @Singleton
 class SessionManager @Inject constructor() {
-    private val mmkv = MMKV.defaultMMKV()
+    // 延迟初始化mmkv实例，等待Application完成MMKV初始化
+    private val mmkv by lazy { MMKV.defaultMMKV() }
+    
+    // 用于提供令牌的响应式流
+    private val _tokenFlow = MutableStateFlow<String?>(null)
+    val tokenFlow: StateFlow<String?> = _tokenFlow
     
     companion object {
         private const val KEY_AUTH_TOKEN = "auth_token"
@@ -20,6 +29,11 @@ class SessionManager @Inject constructor() {
         private const val KEY_AVATAR = "avatar"
         private const val KEY_BIO = "bio"
         private const val KEY_IS_LOGGED_IN = "is_logged_in"
+    }
+    
+    // 初始化tokenFlow，确保在mmkv被访问前已经初始化
+    fun initialize() {
+        _tokenFlow.value = getAuthToken()
     }
     
     /**
@@ -36,6 +50,21 @@ class SessionManager @Inject constructor() {
         user.avatar?.let { mmkv.encode(KEY_AVATAR, it) }
         user.bio?.let { mmkv.encode(KEY_BIO, it) }
         mmkv.encode(KEY_IS_LOGGED_IN, true)
+        
+        // 更新令牌流
+        _tokenFlow.value = token
+    }
+    
+    /**
+     * 单独保存认证令牌
+     * 
+     * @param token 认证令牌
+     */
+    fun saveToken(token: String) {
+        mmkv.encode(KEY_AUTH_TOKEN, token)
+        
+        // 更新令牌流
+        _tokenFlow.value = token
     }
     
     /**
@@ -82,5 +111,7 @@ class SessionManager @Inject constructor() {
      */
     fun logout() {
         mmkv.clearAll()
+        // 更新令牌流为null
+        _tokenFlow.value = null
     }
 } 

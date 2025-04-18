@@ -313,8 +313,8 @@ fun HotSearchItem(
                 .clip(RoundedCornerShape(4.dp))
                 .background(
                     when (rank) {
-                        1, 2, 3 -> Color(0xFFE3F2FD)
-                        else -> Color(0xFFEEEEEE)
+                        1, 2, 3 -> MaterialTheme.colorScheme.primaryContainer
+                        else -> MaterialTheme.colorScheme.surfaceVariant
                     }
                 )
         ) {
@@ -322,7 +322,7 @@ fun HotSearchItem(
                 text = rank.toString(),
                 style = MaterialTheme.typography.bodyMedium.copy(
                     fontWeight = FontWeight.Bold,
-                    color = if (rank <= 3) Color(0xFF1976D2) else Color.Gray
+                    color = if (rank <= 3) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                 ),
                 textAlign = TextAlign.Center
             )
@@ -334,7 +334,7 @@ fun HotSearchItem(
         Text(
             text = text,
             style = MaterialTheme.typography.bodyLarge,
-            color = Color.Black,
+            color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.weight(1f)
         )
 
@@ -342,7 +342,7 @@ fun HotSearchItem(
         Text(
             text = hotness,
             style = MaterialTheme.typography.bodySmall,
-            color = Color.Gray
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }

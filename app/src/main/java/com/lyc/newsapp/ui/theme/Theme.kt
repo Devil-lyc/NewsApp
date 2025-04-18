@@ -5,7 +5,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import com.lyc.newsapp.data.preferences.ThemeMode
 
 // 根据ui.html的颜色系统定义颜色
 val Primary = Color(0xFF1A73E8)
@@ -42,7 +45,7 @@ private val LightColorScheme = lightColorScheme(
     outline = Border
 )
 
-// 暗色主题配色方案（简化处理，实际应用中可根据需求调整）
+// 暗色主题配色方案
 private val DarkColorScheme = darkColorScheme(
     primary = Primary,
     onPrimary = Color.White,
@@ -61,6 +64,12 @@ private val DarkColorScheme = darkColorScheme(
     outline = Color(0xFF444444)
 )
 
+/**
+ * 应用主题
+ *
+ * @param darkTheme 是否使用深色主题
+ * @param content 内容
+ */
 @Composable
 fun NewsAppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),

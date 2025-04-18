@@ -149,14 +149,28 @@ fun LoginScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceAround
                     ) {
-                        Text(
-                            text = "登录",
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFFFF5A8A),
-                            modifier = Modifier.padding( bottom = 8.dp)
-                        )
+                        // 登录按钮和指示器
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = "登录",
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFFFF5A8A),
+                                modifier = Modifier.padding(bottom = 8.dp)
+                            )
+                            
+                            // 登录按钮下方的指示器
+                            Box(
+                                modifier = Modifier
+                                    .height(2.dp)
+                                    .width(40.dp)
+                                    .background(Color(0xFFFF5A8A))
+                            )
+                        }
                         
+                        // 注册按钮
                         Text(
                             text = "注册",
                             fontSize = 18.sp,
@@ -166,14 +180,6 @@ fun LoginScreen(
                         )
                     }
                     
-                    // 活动标签指示器
-                    Box(
-                        modifier = Modifier
-                            .padding(start = 68.dp)
-                            .height(2.dp)
-                            .width(40.dp)
-                            .background(Color(0xFFFF5A8A))
-                    )
                     
                     Spacer(modifier = Modifier.height(16.dp))
                     

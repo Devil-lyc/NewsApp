@@ -107,43 +107,25 @@ fun NewsApp(
     navController: NavHostController,
     authViewModel: AuthViewModel = hiltViewModel()
 ) {
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentDestination = navBackStackEntry?.destination
     val authState by authViewModel.authState.collectAsState()
     
-    // 检查用户是否已登录，如果已登录则跳过认证界面
-    LaunchedEffect(Unit) {
-        authViewModel.checkLoginStatus()
-    }
-    
-    // 额外添加一个单独的导航处理，专门用于处理登出情况
+    // 检查认证状态，如果未登录且当前页面不是Auth页面，则导航到Auth页面
     LaunchedEffect(authState.isLoggedIn) {
-        android.util.Log.d("NewsApp", "登录状态变化: ${authState.isLoggedIn}")
         if (!authState.isLoggedIn) {
-            // 如果状态变为未登录，直接导航到登录页面
-            navController.navigate(Screen.Auth.route) {
-                popUpTo(navController.graph.id) { inclusive = true }
-            }
-        }
-    }
-    
-    // 根据登录状态决定起始目的地
-    LaunchedEffect(authState.isLoggedIn) {
-        if (authState.isLoggedIn) {
-            // 如果当前在认证页面，则导航到首页
-            if (currentDestination?.route == Screen.Auth.route) {
-                navController.navigate(Screen.Home.route) {
-                    popUpTo(Screen.Auth.route) { inclusive = true }
+            val currentDestination = navController.currentDestination?.route
+            if (currentDestination != Screen.Auth.route) {
+                navController.navigate(Screen.Auth.route) {
+                    popUpTo(navController.graph.id) { inclusive = true }
                 }
             }
-        } else {
-            // 如果未登录，则导航到认证页面
-            navController.navigate(Screen.Auth.route) {
-                popUpTo(navController.graph.id) { inclusive = true }
-            }
         }
     }
     
+    // 获取当前导航状态
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
+    
+    // 主应用脚手架
     Scaffold(
         bottomBar = {
             // 仅在主导航页面显示底部导航栏
@@ -184,7 +166,7 @@ fun NewsApp(
                 }
             }
         },
-        contentWindowInsets = WindowInsets.navigationBars
+        contentWindowInsets = WindowInsets(0,0,0,0)
     ) { paddingValues ->
         NavHost(
             navController = navController,
@@ -200,7 +182,7 @@ fun NewsApp(
             composable(Screen.Home.route) {
                 HomeScreen(
                     onArticleClick = { newsId ->
-                        navController.navigate("${Screen.NewsDetail.route}?newsId=${newsId}")
+                        navController.navigate("${Screen.NewsDetail.route}?newsId=${newsId}&isBookmarked=false")
                     }
                 )
             }
@@ -209,7 +191,7 @@ fun NewsApp(
             composable(Screen.Search.route) {
                 SearchScreen(
                     onArticleClick = { newsId ->
-                        navController.navigate("${Screen.NewsDetail.route}?newsId=${newsId}")
+                        navController.navigate("${Screen.NewsDetail.route}?newsId=${newsId}&isBookmarked=false")
                     }
                 )
             }
@@ -218,7 +200,11 @@ fun NewsApp(
             composable(Screen.Bookmark.route) {
                 BookmarkScreen(
                     onArticleClick = { newsId ->
-                        navController.navigate("${Screen.NewsDetail.route}?newsId=${newsId}")
+                        // 从收藏页面导航到详情页时，传递isBookmarked=true参数
+                        navController.navigate("${Screen.NewsDetail.route}?newsId=${newsId}&isBookmarked=true")
+                    },
+                    onNavigateToLogin = {
+                        navController.navigate(Screen.Auth.route)
                     }
                 )
             }
@@ -239,13 +225,22 @@ fun NewsApp(
             
             // 新闻详情路由
             composable(
-                "${Screen.NewsDetail.route}?newsId={newsId}",
-                arguments = listOf(navArgument("newsId") { type = NavType.StringType })
+                "${Screen.NewsDetail.route}?newsId={newsId}&isBookmarked={isBookmarked}",
+                arguments = listOf(
+                    navArgument("newsId") { type = NavType.StringType },
+                    navArgument("isBookmarked") { 
+                        type = NavType.BoolType
+                        defaultValue = false 
+                    }
+                )
             ) { backStackEntry ->
                 val newsId = backStackEntry.arguments?.getString("newsId") ?: ""
+                val isBookmarked = backStackEntry.arguments?.getBoolean("isBookmarked") ?: false
+                
                 NewsDetailScreen(
                     newsId = newsId,
-                    onNavigateUp = { navController.navigateUp() }
+                    onNavigateUp = { navController.navigateUp() },
+                    initialBookmarkState = isBookmarked
                 )
             }
         }

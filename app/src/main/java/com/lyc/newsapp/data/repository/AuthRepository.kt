@@ -8,6 +8,7 @@ import com.lyc.newsapp.data.model.RegisterRequest
 import com.lyc.newsapp.data.model.User
 import com.lyc.newsapp.data.remote.AuthApiService
 import com.lyc.newsapp.util.Resource
+import kotlinx.coroutines.runBlocking
 import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
@@ -89,6 +90,7 @@ class AuthRepository @Inject constructor(
                 if (authResponse != null && authResponse.success && authResponse.data != null) {
                     // 保存用户会话信息
                     sessionManager.saveAuthUser(authResponse.data.user, authResponse.data.token)
+//                    Log.d("AuthRepository", "登录成功，保存令牌: ${authResponse.data.token}")
                     Resource.Success(authResponse.data.user)
                 } else {
                     Resource.Error(authResponse?.message ?: "登录失败")
@@ -142,7 +144,7 @@ class AuthRepository @Inject constructor(
     /**
      * 登出当前用户
      */
-    fun logout() {
+    suspend fun logout() {
         sessionManager.logout()
     }
 } 

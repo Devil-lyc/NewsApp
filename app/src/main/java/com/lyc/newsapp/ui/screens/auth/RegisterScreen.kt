@@ -158,35 +158,39 @@ fun RegisterScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceAround
                     ) {
+                        // 登录按钮
                         Text(
                             text = "登录",
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Normal,
                             color = Color.White,
                             modifier = Modifier.clickable { onNavigateToLogin() }
-
                         )
 
-                        Text(
-                            text = "注册",
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFFFF5A8A),
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
+                        // 注册按钮和指示器
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = "注册",
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFFFF5A8A),
+                                modifier = Modifier.padding(bottom = 8.dp)
+                            )
+                            
+                            // 注册按钮下方的指示器
+                            Box(
+                                modifier = Modifier
+                                    .height(2.dp)
+                                    .width(40.dp)
+                                    .background(Color(0xFFFF5A8A))
+                            )
+                        }
                     }
-
-                    // 活动标签指示器
-                    Box(
-                        modifier = Modifier
-                            .padding(start = 4.dp, end = 68.dp)
-                            .height(2.dp)
-                            .width(40.dp)
-                            .background(Color(0xFFFF5A8A))
-                            .align(Alignment.End)
-                    )
                     
-                    Spacer(modifier = Modifier.height(16.dp))                    
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
                     // 错误提示
                     AnimatedVisibility(visible = authState.error != null) {
                         Column(

@@ -144,14 +144,17 @@ class NewsRepositoryImpl @Inject constructor(
     ): Flow<Resource<List<News>>> {
         return flow {
             emit(Resource.Loading(true))
-
             val newsResponse = try {
-                newsApi.getNextPage(
-                    category = category,
-                    page = nextPage,
-                    language = language,
-                    country = country
-                )
+                if(category == "all"){
+                    newsApi.getAllNewsListNextPage(page = nextPage)
+                } else{
+                    newsApi.getNextPage(
+                        category = category,
+                        page = nextPage,
+                        language = language,
+                        country = country
+                    )
+                }
             }  catch (e: IOException) {
                 e.printStackTrace()
                 emit(Resource.Error("无法连接服务器，请检查网络连接"))

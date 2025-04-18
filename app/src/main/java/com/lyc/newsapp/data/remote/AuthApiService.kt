@@ -9,6 +9,7 @@ import retrofit2.http.POST
 
 /**
  * 认证API服务接口
+ * 基于 https://kkzynytfzajt.sealoshzh.site/ API
  */
 interface AuthApiService {
     

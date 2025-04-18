@@ -31,17 +31,23 @@ import com.lyc.newsapp.ui.utils.formatDate
 @Composable
 fun NewsDetailScreen(
     newsId: String,
-    onNavigateUp: () -> Unit
+    onNavigateUp: () -> Unit,
+    initialBookmarkState: Boolean = false // 添加初始收藏状态参数
 ) {
     val newsDetailViewModel = hiltViewModel<NewsDetailViewModel>()
     val newsDetailUiState = newsDetailViewModel.uiState.collectAsState()
+    
+    // 根据传入的初始收藏状态设置ViewModel状态
+    LaunchedEffect(initialBookmarkState) {
+        if (initialBookmarkState) {
+            newsDetailViewModel.onEvent(NewsDetailUiEvents.SetInitialBookmarkState(true))
+        }
+    }
     
     // 获取文章数据
     LaunchedEffect(key1 = newsId) {
         newsDetailViewModel.onEvent(NewsDetailUiEvents.LoadNewsDetail(newsId))
     }
-    
-    val isBookmarked = remember { mutableStateOf(newsDetailUiState.value.isBookmarked) }
     
     Scaffold(
         topBar = {
@@ -56,12 +62,25 @@ fun NewsDetailScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { isBookmarked.value = !isBookmarked.value }) {
+                    // 收藏按钮
+                    IconButton(
+                        onClick = { 
+                            newsDetailViewModel.onEvent(NewsDetailUiEvents.ToggleBookmark)
+                        }
+                    ) {
                         Icon(
-                            imageVector = if (isBookmarked.value) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
-                            contentDescription = if (isBookmarked.value) "取消收藏" else "收藏"
+                            imageVector = if (newsDetailUiState.value.isBookmarked) 
+                                            Icons.Default.Bookmark 
+                                         else 
+                                            Icons.Default.BookmarkBorder,
+                            contentDescription = if (newsDetailUiState.value.isBookmarked) "取消收藏" else "收藏",
+                            tint = if (newsDetailUiState.value.isBookmarked) 
+                                        MaterialTheme.colorScheme.primary
+                                   else 
+                                        MaterialTheme.colorScheme.onSurface
                         )
                     }
+                    // 分享按钮
                     IconButton(onClick = { /* 分享功能，暂不实现 */ }) {
                         Icon(
                             imageVector = Icons.Default.Share,
@@ -79,15 +98,16 @@ fun NewsDetailScreen(
         },
         contentWindowInsets = WindowInsets.statusBars
     ) { paddingValues ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
-            // 显示加载状态
-            if (newsDetailUiState.value.isLoading) {
+    
+        val news = newsDetailUiState.value.news
+        
+        when {
+            // 加载中状态
+            newsDetailUiState.value.isLoading -> {
                 Box(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
                     contentAlignment = Alignment.Center
                 ) {
                     Column(
@@ -97,22 +117,26 @@ fun NewsDetailScreen(
                         CircularProgressIndicator()
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
-                            text = "正在加载...",
-                            style = MaterialTheme.typography.bodyMedium
+                            text = "正在加载文章内容...",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
-            } 
-            // 显示错误状态
-            else if (newsDetailUiState.value.error != null) {
+            }
+            
+            // 错误状态
+            newsDetailUiState.value.error != null -> {
                 Box(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
                     contentAlignment = Alignment.Center
                 ) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center,
-                        modifier = Modifier.padding(16.dp)
+                        modifier = Modifier.padding(32.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Default.Warning,
@@ -130,223 +154,109 @@ fun NewsDetailScreen(
                         Text(
                             text = newsDetailUiState.value.error ?: "未知错误",
                             style = MaterialTheme.typography.bodyMedium,
-                            textAlign = TextAlign.Center
+                            textAlign = TextAlign.Center,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Spacer(modifier = Modifier.height(24.dp))
                         Button(
-                            onClick = {
+                            onClick = { 
                                 newsDetailViewModel.onEvent(NewsDetailUiEvents.LoadNewsDetail(newsId))
                             }
                         ) {
+                            Icon(
+                                imageVector = Icons.Default.Refresh,
+                                contentDescription = "重试"
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
                             Text(text = "重试")
                         }
                     }
                 }
             }
-            // 显示新闻内容
-            else if (newsDetailUiState.value.news != null) {
-                val news = newsDetailUiState.value.news!!
-                Column(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    // 文章元数据
+            
+            // 文章内容显示
+            news != null -> {
+                // WebView方式
+                if (news.url.isNotEmpty()) {
+                    AndroidView(
+                        factory = { context ->
+                            WebView(context).apply {
+                                webViewClient = WebViewClient()
+                                settings.javaScriptEnabled = true
+                                settings.domStorageEnabled = true
+                                loadUrl(news.url)
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(paddingValues)
+                    )
+                } 
+                // 本地内容展示
+                else {
                     Column(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
+                            .fillMaxSize()
+                            .padding(paddingValues)
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
                     ) {
-                        AsyncImage(
-                            model = news.imageUrl,
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(200.dp)
-                                .clip(RoundedCornerShape(16.dp))
-                        )
-                        Spacer(modifier = Modifier.height(12.dp))
-                        // 类别标签
-                        CategoryChip(category = news.category)
-                        
-                        Spacer(modifier = Modifier.height(12.dp))
-                        
-                        // 文章标题
+                        // 标题
                         Text(
                             text = news.title,
-                            style = MaterialTheme.typography.headlineSmall.copy(
+                            style = MaterialTheme.typography.headlineMedium.copy(
                                 fontWeight = FontWeight.Bold
                             )
                         )
                         
-                        Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
                         
-                        // 文章元数据
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = news.source_name,
-                                style = MaterialTheme.typography.labelLarge,
-                                color = MaterialTheme.colorScheme.primary
+                        // 图片
+                        if (news.imageUrl.isNotEmpty()) {
+                            AsyncImage(
+                                model = news.imageUrl,
+                                contentDescription = news.title,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(200.dp)
+                                    .clip(RoundedCornerShape(8.dp))
                             )
-
-//                            Text(
-//                                text = " • ${news.author}",
-//                                style = MaterialTheme.typography.labelLarge,
-//                                color = MaterialTheme.colorScheme.onSurfaceVariant
-//                            )
-
-                            Text(
-                                text = " • ${formatDate(news.publishedAt)}",
-                                style = MaterialTheme.typography.labelLarge,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+                            
+                            Spacer(modifier = Modifier.height(16.dp))
                         }
+                        
+                        // 分类标签
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            // 来源和时间
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    text = news.source_name,
+                                    style = MaterialTheme.typography.labelLarge,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
 
+                                Text(
+                                    text = " • ${formatDate(news.publishedAt)}",
+                                    style = MaterialTheme.typography.labelLarge,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                            
+                            // 分类标签
+                            CategoryChip(category = news.category)
+                        }
+                        
+                        Spacer(modifier = Modifier.height(16.dp))
+                        
+                        // 正文内容
                         Text(
                             text = news.content,
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
-
-                    }
-                    
-                    // WebView 内容
-                    // Box(
-                    //     modifier = Modifier
-                    //         .fillMaxWidth()
-                    //         .weight(1f)
-                    // ) {
-                    //     // 验证URL是否有效
-                    //     if (news.url.isEmpty() || !news.url.startsWith("http")) {
-                    //         Box(
-                    //             modifier = Modifier.fillMaxSize(),
-                    //             contentAlignment = Alignment.Center
-                    //         ) {
-                    //             Text(
-                    //                 text = "无法加载新闻内容：无效的URL",
-                    //                 style = MaterialTheme.typography.bodyLarge,
-                    //                 textAlign = TextAlign.Center,
-                    //                 modifier = Modifier.padding(16.dp)
-                    //             )
-                    //         }
-                    //     } else {
-                    //         // 加载WebView
-                    //         var isWebViewLoading by remember { mutableStateOf(true) }
-                    //         var webViewError by remember { mutableStateOf<String?>(null) }
-                            
-                    //         AndroidView(
-                    //             factory = { context ->
-                    //                 WebView(context).apply {
-                    //                     settings.apply {
-                    //                         javaScriptEnabled = true
-                    //                         loadWithOverviewMode = true
-                    //                         useWideViewPort = true
-                    //                         domStorageEnabled = true
-                    //                         setGeolocationEnabled(false)
-                    //                         blockNetworkImage = false
-                    //                         loadsImagesAutomatically = true
-                    //                     }
-                                        
-                    //                     webViewClient = object : WebViewClient() {
-                    //                         override fun onPageFinished(view: WebView?, url: String?) {
-                    //                             super.onPageFinished(view, url)
-                    //                             isWebViewLoading = false
-                    //                         }
-                                            
-                    //                         override fun onReceivedError(
-                    //                             view: WebView?,
-                    //                             errorCode: Int,
-                    //                             description: String?,
-                    //                             failingUrl: String?
-                    //                         ) {
-                    //                             super.onReceivedError(view, errorCode, description, failingUrl)
-                    //                             isWebViewLoading = false
-                    //                             webViewError = description
-                    //                         }
-                    //                     }
-                    //                 }
-                    //             },
-                    //             update = { webView ->
-                    //                 webView.loadUrl(news.url)
-                    //             }
-                    //         )
-                            
-                    //         // 显示WebView的加载状态
-                    //         if (isWebViewLoading) {
-                    //             Box(
-                    //                 modifier = Modifier.fillMaxSize(),
-                    //                 contentAlignment = Alignment.Center
-                    //             ) {
-                    //                 CircularProgressIndicator()
-                    //             }
-                    //         }
-                            
-                    //         // 显示WebView的错误状态
-                    //         if (webViewError != null) {
-                    //             Box(
-                    //                 modifier = Modifier.fillMaxSize(),
-                    //                 contentAlignment = Alignment.Center
-                    //             ) {
-                    //                 Column(
-                    //                     horizontalAlignment = Alignment.CenterHorizontally,
-                    //                     verticalArrangement = Arrangement.Center,
-                    //                     modifier = Modifier.padding(16.dp)
-                    //                 ) {
-                    //                     Icon(
-                    //                         imageVector = Icons.Default.Warning,
-                    //                         contentDescription = "错误",
-                    //                         tint = MaterialTheme.colorScheme.error,
-                    //                         modifier = Modifier.size(48.dp)
-                    //                     )
-                    //                     Spacer(modifier = Modifier.height(16.dp))
-                    //                     Text(
-                    //                         text = webViewError ?: "未知错误",
-                    //                         style = MaterialTheme.typography.bodyMedium,
-                    //                         textAlign = TextAlign.Center
-                    //                     )
-                    //                 }
-                    //             }
-                    //         }
-                    //     }
-                    // }
-                }
-            } 
-            // 空状态（既不是加载中，也没有错误，也没有数据）
-            else {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center,
-                        modifier = Modifier.padding(16.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Info,
-                            contentDescription = "信息",
-                            modifier = Modifier.size(48.dp)
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text(
-                            text = "无法找到新闻",
-                            style = MaterialTheme.typography.titleLarge
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = "可能是网络问题或新闻已不可用",
-                            style = MaterialTheme.typography.bodyMedium,
-                            textAlign = TextAlign.Center
-                        )
-                        Spacer(modifier = Modifier.height(24.dp))
-                        Button(
-                            onClick = {
-                                newsDetailViewModel.onEvent(NewsDetailUiEvents.LoadNewsDetail(newsId))
-                            }
-                        ) {
-                            Text(text = "重试")
-                        }
                     }
                 }
             }

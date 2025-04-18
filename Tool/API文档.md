@@ -1,8 +1,8 @@
 # Node.js API 接口文档
 
 ## 基本信息
-- 基本URL：https://ceqjrjwgmeqy.sealoshzh.site
-- 文档URL：https://ceqjrjwgmeqy.sealoshzh.site/api-docs
+- 基本URL：https://kkzynytfzajt.sealoshzh.site
+- 文档URL：https://kkzynytfzajt.sealoshzh.site/api-docs
 
 ## 认证方式
 所有需要认证的接口都需要在请求头中添加 `Authorization` 字段，值为 `Bearer {token}`，其中 `{token}` 是用户登录后获取的令牌。

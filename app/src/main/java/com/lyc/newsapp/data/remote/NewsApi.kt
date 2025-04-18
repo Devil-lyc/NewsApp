@@ -12,8 +12,8 @@ interface NewsApi {
      */
     @GET("latest")
     suspend fun getLatestNews(
-        @Query("language") language: String = "zh",
-        @Query("country") country: String = "cn",
+        @Query("language") language: String = "zh,en",
+        @Query("country") country: String = "wo",
         @Query("apikey") apiKey: String? = null,
         @Query("image") image: Int = 1
     ): NewsResponse
@@ -33,8 +33,8 @@ interface NewsApi {
     @GET("latest")
     suspend fun getNewsByCategory(
         @Query("category") category: String,
-        @Query("language") language: String = "zh",
-        @Query("country") country: String = "cn",
+        @Query("language") language: String = "zh,en",
+        @Query("country") country: String = "wo",
         @Query("apikey") apiKey: String? = null,
         @Query("image") image: Int = 1
     ): NewsResponse
@@ -46,8 +46,17 @@ interface NewsApi {
     suspend fun getNextPage(
         @Query("category") category: String,
         @Query("page") page: String,
-        @Query("language") language: String = "zh",
-        @Query("country") country: String = "cn",
+        @Query("language") language: String = "zh,en",
+        @Query("country") country: String = "wo",
+        @Query("apikey") apiKey: String? = null,
+        @Query("image") image: Int = 1
+    ): NewsResponse
+
+    @GET("latest")
+    suspend fun getAllNewsListNextPage(
+        @Query("page") page: String,
+        @Query("language") language: String = "zh,en",
+        @Query("country") country: String = "wo",
         @Query("apikey") apiKey: String? = null,
         @Query("image") image: Int = 1
     ): NewsResponse
@@ -58,8 +67,8 @@ interface NewsApi {
     @GET("latest")
     suspend fun searchNews(
         @Query("q") q: String,
-        @Query("language") language: String = "zh",
-        @Query("country") country: String = "cn",
+        @Query("language") language: String = "zh,en",
+        @Query("country") country: String = "wo",
         @Query("apikey") apiKey: String? = null,
         @Query("image") image: Int = 1
     ): NewsResponse

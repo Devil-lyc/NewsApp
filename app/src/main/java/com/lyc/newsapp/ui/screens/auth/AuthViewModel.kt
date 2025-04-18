@@ -128,11 +128,17 @@ class AuthViewModel @Inject constructor(
      */
     fun logout() {
         android.util.Log.d("AuthViewModel", "执行登出操作")
-        // 直接设置状态为未登录
+        // 更新状态为未登录
         _authState.value = AuthState(isLoggedIn = false)
-        // 清除本地存储数据
-        authRepository.logout()
-        android.util.Log.d("AuthViewModel", "登出操作完成")
+        // 在协程中清除本地存储数据
+        viewModelScope.launch {
+            try {
+                authRepository.logout()
+                android.util.Log.d("AuthViewModel", "登出操作完成")
+            } catch (e: Exception) {
+                android.util.Log.e("AuthViewModel", "登出操作失败", e)
+            }
+        }
     }
     
     /**

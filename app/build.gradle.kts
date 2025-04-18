@@ -42,8 +42,16 @@ android {
 }
 
 dependencies {
+    // AndroidX Core
+    implementation("androidx.core:core:1.10.1")
+    implementation("androidx.core:core-ktx:1.10.1")
+
     // Timber for logging
     implementation("com.jakewharton.timber:timber:5.0.1")
+
+    // DataStore
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+    implementation("androidx.datastore:datastore-preferences-core:1.0.0")
 
     // MMKV for key-value storage
     implementation("com.tencent:mmkv:1.3.1")
@@ -51,9 +59,12 @@ dependencies {
     // WebView for Compose
     implementation("com.google.accompanist:accompanist-webview:0.32.0")
 
+    // 下拉刷新
+    implementation("androidx.compose.material:material:1.7.8")
+
     //Navigation
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
-    implementation("androidx.navigation:navigation-compose:2.8.8")
+    implementation("androidx.navigation:navigation-compose:2.7.7")
 
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
@@ -80,7 +91,6 @@ dependencies {
     //Extended Icons
     implementation("androidx.compose.material:material-icons-extended:1.7.8")
 
-    implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
