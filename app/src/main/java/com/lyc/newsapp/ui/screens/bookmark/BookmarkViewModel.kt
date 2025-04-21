@@ -47,31 +47,34 @@ class BookmarkViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = !isInitialized, error = null) }
             
-            favoriteRepository.getFavorites().collect { result ->
-                when (result) {
-                    is Resource.Success -> {
-                        _uiState.update { 
-                            it.copy(
-                                favorites = result.data ?: emptyList(),
-                                isLoading = false
-                            )
+            favoriteRepository.getFavorites()
+                .collect { result ->
+                    when (result) {
+                        is Resource.Success -> {
+                            _uiState.update {
+                                it.copy(
+                                    favorites = result.data ?: emptyList(),
+                                    isLoading = false
+                                )
+                            }
+                            isInitialized = true
                         }
-                        isInitialized = true
-                    }
-                    is Resource.Error -> {
-                        _uiState.update { 
-                            it.copy(
-                                error = result.message,
-                                isLoading = false
-                            )
+
+                        is Resource.Error -> {
+                            _uiState.update {
+                                it.copy(
+                                    error = result.message,
+                                    isLoading = false
+                                )
+                            }
+                        }
+
+                        is Resource.Loading -> {
+                            if (!isInitialized) {
+                                _uiState.update { it.copy(isLoading = true) }
+                            }
                         }
                     }
-                    is Resource.Loading -> {
-                        if (!isInitialized) {
-                            _uiState.update { it.copy(isLoading = true) }
-                        }
-                    }
-                }
             }
         }
     }

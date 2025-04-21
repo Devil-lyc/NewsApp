@@ -1,6 +1,5 @@
 package com.lyc.newsapp.data.repository
 
-import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.lyc.newsapp.data.model.FavoriteRequest
@@ -91,7 +90,7 @@ class FavoriteRepositoryImpl @Inject constructor(
             }
         } catch (e: Exception) {
 //            Log.e(TAG, "获取收藏列表异常: ${e.message}")
-            emit(Resource.Error(e.localizedMessage ?: "发生未知错误"))
+            emit(Resource.Error( "服务器连接失败"))
         }
     }
     

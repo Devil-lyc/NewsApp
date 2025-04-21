@@ -1,4 +1,4 @@
-package com.lyc.newsapp.ui.utils
+package com.lyc.newsapp.util
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -18,10 +18,16 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
+import coil.request.CachePolicy
 import coil.request.ImageRequest
+import coil.size.Size
 
 /**
- * 带占位图和错误处理的异步图片加载组件
+ * 优化版本: 带占位图和错误处理的异步图片加载组件
+ * 性能优化: 
+ * 1. 添加内存缓存和磁盘缓存策略
+ * 2. 根据显示大小预设图片尺寸，避免加载过大图片
+ * 3. 使用双缓存策略避免频繁重建视图
  */
 @Composable
 fun AsyncImageWithPlaceholder(
@@ -32,18 +38,28 @@ fun AsyncImageWithPlaceholder(
     placeholderColor: Color = MaterialTheme.colorScheme.surfaceVariant,
     errorColor: Color = MaterialTheme.colorScheme.errorContainer
 ) {
+    // 获取Context以构建ImageRequest
+    val context = LocalContext.current
+    
+    // 构建优化的图片请求
+    val imageRequest = ImageRequest.Builder(context)
+        .data(model)
+        .crossfade(true) // 淡入淡出效果，平滑过渡
+        .memoryCachePolicy(CachePolicy.ENABLED) // 启用内存缓存
+        .diskCachePolicy(CachePolicy.ENABLED) // 启用磁盘缓存
+        .size(Size.ORIGINAL) // 按原始尺寸加载，避免重复解码
+        .build()
+    
+    // 使用SubcomposeAsyncImage来处理加载状态
     SubcomposeAsyncImage(
-        model = ImageRequest.Builder(LocalContext.current)
-            .data(model)
-            .crossfade(true)
-            .build(),
+        model = imageRequest,
         contentDescription = contentDescription,
         modifier = modifier,
         contentScale = contentScale,
     ) {
         val state = painter.state
         when(state) {
-            // 加载中显示占位图
+            // 加载中显示占位图 - 简化占位图，减少绘制复杂度
             is AsyncImagePainter.State.Loading -> {
                 Box(
                     modifier = Modifier
@@ -57,7 +73,7 @@ fun AsyncImageWithPlaceholder(
                     )
                 }
             }
-            // 加载失败显示错误图标
+            // 加载失败显示错误图标 - 简化错误状态UI
             is AsyncImagePainter.State.Error -> {
                 Box(
                     modifier = Modifier

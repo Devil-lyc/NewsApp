@@ -1,7 +1,6 @@
 package com.lyc.newsapp
 
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
@@ -12,11 +11,17 @@ import androidx.compose.material.icons.outlined.Bookmark
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material3.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
@@ -30,12 +35,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import com.lyc.newsapp.ui.screens.auth.AuthScreen
-import com.lyc.newsapp.ui.screens.news.NewsDetailScreen
+import com.lyc.newsapp.ui.screens.auth.AuthViewModel
 import com.lyc.newsapp.ui.screens.bookmark.BookmarkScreen
 import com.lyc.newsapp.ui.screens.home.HomeScreen
+import com.lyc.newsapp.ui.screens.news.NewsDetailScreen
 import com.lyc.newsapp.ui.screens.profile.ProfileScreen
 import com.lyc.newsapp.ui.screens.search.SearchScreen
-import com.lyc.newsapp.ui.screens.auth.AuthViewModel
+import com.lyc.newsapp.util.performance.StartupTracer
 
 /**
  * 导航目标
@@ -101,17 +107,34 @@ val bottomNavItems = listOf(
 
 /**
  * 主应用入口
+ * @param navController 导航控制器
+ * @param onFirstContentRender 首次内容渲染完成回调
+ * @param authViewModel 身份验证视图模型
  */
 @Composable
 fun NewsApp(
     navController: NavHostController,
+    onFirstContentRender: () -> Unit = {},
     authViewModel: AuthViewModel = hiltViewModel()
 ) {
     val authState by authViewModel.authState.collectAsState()
     
-    // 检查认证状态，如果未登录且当前页面不是Auth页面，则导航到Auth页面
+    // 标记是否已经调用过渲染完成回调
+    val hasCalledRenderCallback = remember { mutableListOf(false) }
+    
+    // 避免应用启动时的导航跳转，仅在用户交互导致的登录状态变化时执行导航
+    val isFirstNavigation = remember { mutableStateOf(true) }
+    
     LaunchedEffect(authState.isLoggedIn) {
+        // 首次加载时不执行导航，使用startDestination处理初始路由
+        if (isFirstNavigation.value) {
+            isFirstNavigation.value = false
+            return@LaunchedEffect
+        }
+        
+        // 后续的登录状态变化再执行导航
         if (!authState.isLoggedIn) {
+            // 只有当前不在Auth页面时才导航
             val currentDestination = navController.currentDestination?.route
             if (currentDestination != Screen.Auth.route) {
                 navController.navigate(Screen.Auth.route) {
@@ -175,16 +198,36 @@ fun NewsApp(
         ) {
             // 认证路由
             composable(Screen.Auth.route) {
+                StartupTracer.markEvent("auth_screen_compose")
                 AuthScreen(mainNavController = navController)
+                
+                // 调用首次渲染完成回调
+                if (!hasCalledRenderCallback[0]) {
+                    onFirstContentRender()
+                    hasCalledRenderCallback[0] = true
+                }
             }
             
             // 主页路由
             composable(Screen.Home.route) {
+                StartupTracer.startStage(StartupTracer.Stages.HOME_SCREEN_INIT)
+                
                 HomeScreen(
                     onArticleClick = { newsId ->
                         navController.navigate("${Screen.NewsDetail.route}?newsId=${newsId}&isBookmarked=false")
                     }
                 )
+                
+                // 记录首页加载完成
+                LaunchedEffect(Unit) {
+                    StartupTracer.endStage(StartupTracer.Stages.HOME_SCREEN_INIT)
+                    
+                    // 调用首次渲染完成回调
+                    if (!hasCalledRenderCallback[0]) {
+                        onFirstContentRender()
+                        hasCalledRenderCallback[0] = true
+                    }
+                }
             }
             
             // 搜索路由

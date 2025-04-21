@@ -11,7 +11,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.lyc.newsapp.domain.model.News
-import com.lyc.newsapp.ui.utils.AsyncImageWithPlaceholder
+import com.lyc.newsapp.util.AsyncImageWithPlaceholder
 import com.lyc.newsapp.ui.utils.formatDate
 
 /** 普通新闻文章卡片 */

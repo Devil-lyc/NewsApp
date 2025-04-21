@@ -31,16 +31,16 @@ class AuthViewModel @Inject constructor(
     private val authRepository: AuthRepository
 ) : ViewModel() {
     
-    private val _authState = MutableStateFlow(AuthState())
+    private val _authState = MutableStateFlow(
+        AuthState(
+            isLoggedIn = authRepository.isLoggedIn(),
+            user = authRepository.getCurrentUser()
+        )
+    )
     val authState: StateFlow<AuthState> = _authState
     
-    init {
-        // 检查用户是否已登录
-        checkLoginStatus()
-    }
-    
     /**
-     * 检查用户登录状态
+     * 检查用户登录状态 - 仅在需要强制刷新时使用
      */
     fun checkLoginStatus() {
         val isLoggedIn = authRepository.isLoggedIn()
