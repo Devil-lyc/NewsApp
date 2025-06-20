@@ -193,7 +193,8 @@ fun NewsApp(
     ) { paddingValues ->
         NavHost(
             navController = navController,
-            startDestination = if (authState.isLoggedIn) Screen.Home.route else Screen.Auth.route,
+            startDestination = Screen.Home.route,
+//            startDestination = if (authState.isLoggedIn) Screen.Home.route else Screen.Auth.route,
             modifier = Modifier.padding(paddingValues)
         ) {
             // 认证路由
