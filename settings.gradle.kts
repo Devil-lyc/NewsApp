@@ -20,6 +20,11 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "NewsApp"
+
+// 启用类型安全的项目访问器
+// 这允许使用projects.feature.foryou这样的语法访问项目
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 include(":app")
 include(":feature")
 include(":core")

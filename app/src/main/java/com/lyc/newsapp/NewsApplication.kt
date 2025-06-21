@@ -1,8 +1,8 @@
 package com.lyc.newsapp
 
 import android.app.Application
-import com.lyc.newsapp.data.local.SessionManager
-import com.lyc.newsapp.util.performance.StartupTracer
+import com.example.common.util.performance.StartupTracer
+import com.example.database.SessionManager
 import com.tencent.mmkv.MMKV
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
@@ -17,7 +17,7 @@ import javax.inject.Inject
 class NewsApplication : Application() {
     
     @Inject
-    lateinit var sessionManager: SessionManager
+    lateinit var sessionManager: com.example.database.SessionManager
     
     override fun onCreate() {
         // 初始化启动性能跟踪器

@@ -42,6 +42,16 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.database)
+    implementation(projects.core.model)
+    implementation(projects.core.common)
+    implementation(projects.feature.auth)
+    implementation(projects.feature.home)
+    implementation(projects.feature.interests)
+    implementation(projects.feature.bookmarks)
+    implementation(projects.feature.newsdetail)
+    implementation(projects.feature.profile)
+    implementation(projects.feature.search)
     // AndroidX Core
 //    implementation("androidx.core:core:1.10.1")
     implementation(libs.androidx.core.ktx)
@@ -53,8 +63,8 @@ dependencies {
     implementation(libs.timber)
 
     // DataStore
-    implementation(libs.androidx.datastore.preferences)
-    implementation(libs.androidx.datastore.preferences.core)
+//    implementation(libs.androidx.datastore.preferences)
+//    implementation(libs.androidx.datastore.preferences.core)
 
     // MMKV for key-value storage
     implementation(libs.mmkv)
@@ -70,14 +80,14 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
 
     // Retrofit
-    implementation(libs.retrofit.core)
-    implementation(libs.converter.gson)
-    implementation(libs.okhttp.logging)
+//    implementation(libs.retrofit.core)
+//    implementation(libs.converter.gson)
+//    implementation(libs.okhttp.logging)
 
     // Room
-    implementation(libs.room.runtime)
-    implementation(libs.room.ktx)
-    ksp(libs.room.compiler)
+//    implementation(libs.room.runtime)
+//    implementation(libs.room.ktx)
+//    ksp(libs.room.compiler)
 
     // Dagger Hilt
     implementation(libs.hilt.android)
@@ -87,7 +97,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
 
     // Image loading
-    implementation(libs.coil.kt.compose)
+//    implementation(libs.coil.kt.compose)
 
 
     //Extended Icons
@@ -99,7 +109,8 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
+    implementation(libs.androidx.compose.material3)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

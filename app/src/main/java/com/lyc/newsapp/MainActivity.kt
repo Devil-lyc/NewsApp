@@ -15,9 +15,9 @@ import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
+import com.example.common.util.performance.StartupTracer
 import com.lyc.newsapp.ui.theme.NewsAppTheme
 import com.lyc.newsapp.ui.theme.ThemeViewModel
-import com.lyc.newsapp.util.performance.StartupTracer
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -69,7 +69,8 @@ class MainActivity : ComponentActivity() {
                     
                     // 记录首次渲染完成事件
                     DisposableEffect(Unit) {
-                        val duration = StartupTracer.endStage(StartupTracer.Stages.MAIN_ACTIVITY_INIT)
+                        val duration = StartupTracer.endStage(
+                            StartupTracer.Stages.MAIN_ACTIVITY_INIT)
                         Timber.d("MainActivity初始化完成，耗时: ${duration}ms")
                         
                         StartupTracer.startStage(StartupTracer.Stages.FIRST_RENDER)
@@ -86,7 +87,8 @@ class MainActivity : ComponentActivity() {
                         navController = navController,
                         onFirstContentRender = {
                             // 主界面首次渲染完成
-                            val renderTime = StartupTracer.endStage(StartupTracer.Stages.FIRST_RENDER)
+                            val renderTime = StartupTracer.endStage(
+                                StartupTracer.Stages.FIRST_RENDER)
                             Timber.d("首次内容渲染完成，耗时: ${renderTime}ms")
                             
                             // 打印当前的阶段性启动报告

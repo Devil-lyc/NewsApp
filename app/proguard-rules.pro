@@ -23,8 +23,8 @@
 # Add additional ProGuard rules to protect sensitive information
 
 # Keep the ApiKeyConfig class but obfuscate its methods and fields
--keep class com.lyc.newsapp.util.ApiKeyConfig { *; }
--keepclassmembers class com.lyc.newsapp.util.ApiKeyConfig {
+-keep class com.example.common.util.ApiKeyConfig { *; }
+-keepclassmembers class com.example.common.util.ApiKeyConfig {
     private <fields>; 
     private <methods>; 
 }

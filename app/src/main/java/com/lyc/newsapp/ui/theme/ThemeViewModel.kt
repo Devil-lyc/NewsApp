@@ -2,8 +2,8 @@ package com.lyc.newsapp.ui.theme
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lyc.newsapp.data.preferences.ThemeMode
-import com.lyc.newsapp.data.preferences.ThemePreference
+import com.example.database.ThemeMode
+import com.example.database.ThemePreference
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted

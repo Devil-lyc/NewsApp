@@ -34,14 +34,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
-import com.lyc.newsapp.ui.screens.auth.AuthScreen
-import com.lyc.newsapp.ui.screens.auth.AuthViewModel
-import com.lyc.newsapp.ui.screens.bookmark.BookmarkScreen
-import com.lyc.newsapp.ui.screens.home.HomeScreen
-import com.lyc.newsapp.ui.screens.news.NewsDetailScreen
-import com.lyc.newsapp.ui.screens.profile.ProfileScreen
-import com.lyc.newsapp.ui.screens.search.SearchScreen
-import com.lyc.newsapp.util.performance.StartupTracer
+import com.example.auth.AuthScreen
+import com.example.auth.AuthViewModel
+import com.example.bookmarks.BookmarkScreen
+import com.example.home.HomeScreen
+import com.example.newsdetail.NewsDetailScreen
+import com.example.profile.ProfileScreen
+import com.example.search.SearchScreen
+import com.example.common.util.performance.StartupTracer
 
 /**
  * 导航目标
