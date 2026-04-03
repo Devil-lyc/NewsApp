@@ -7,7 +7,7 @@ import com.lyc.newsapp.data.model.LoginRequest
 import com.lyc.newsapp.data.model.RegisterRequest
 import com.lyc.newsapp.data.model.User
 import com.lyc.newsapp.data.remote.AuthApiService
-import com.lyc.newsapp.util.Resource
+import com.lyc.newsapp.core.result.Resource
 import kotlinx.coroutines.runBlocking
 import retrofit2.HttpException
 import java.io.IOException

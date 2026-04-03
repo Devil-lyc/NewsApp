@@ -6,7 +6,7 @@ import com.lyc.newsapp.data.model.FavoriteRequest
 import com.lyc.newsapp.data.remote.FavoriteApiService
 import com.lyc.newsapp.domain.model.Favorite
 import com.lyc.newsapp.domain.repository.FavoriteRepository
-import com.lyc.newsapp.util.Resource
+import com.lyc.newsapp.core.result.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import okhttp3.ResponseBody

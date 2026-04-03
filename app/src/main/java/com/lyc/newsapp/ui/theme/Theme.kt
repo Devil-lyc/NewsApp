@@ -5,10 +5,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import com.lyc.newsapp.data.preferences.ThemeMode
 
 // 根据ui.html的颜色系统定义颜色
 val Primary = Color(0xFF1A73E8)

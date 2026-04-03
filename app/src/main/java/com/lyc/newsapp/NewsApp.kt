@@ -34,13 +34,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
-import com.lyc.newsapp.ui.screens.auth.AuthScreen
-import com.lyc.newsapp.ui.screens.auth.AuthViewModel
-import com.lyc.newsapp.ui.screens.bookmark.BookmarkScreen
-import com.lyc.newsapp.ui.screens.home.HomeScreen
-import com.lyc.newsapp.ui.screens.news.NewsDetailScreen
-import com.lyc.newsapp.ui.screens.profile.ProfileScreen
-import com.lyc.newsapp.ui.screens.search.SearchScreen
+import com.lyc.newsapp.ui.feature.auth.AuthIntent
+import com.lyc.newsapp.ui.feature.auth.AuthScreen
+import com.lyc.newsapp.ui.feature.auth.AuthViewModel
+import com.lyc.newsapp.ui.feature.bookmark.BookmarkScreen
+import com.lyc.newsapp.ui.feature.home.HomeScreen
+import com.lyc.newsapp.ui.feature.news.NewsDetailScreen
+import com.lyc.newsapp.ui.feature.profile.ProfileScreen
+import com.lyc.newsapp.ui.feature.search.SearchScreen
 import com.lyc.newsapp.util.performance.StartupTracer
 
 /**
@@ -258,7 +259,7 @@ fun NewsApp(
                 ProfileScreen(
                     onLogout = {
                         // 先执行登出逻辑
-                        authViewModel.logout()
+                        authViewModel.dispatch(AuthIntent.Logout)
                         // 然后立即强制导航到登录界面
                         navController.navigate(Screen.Auth.route) {
                             popUpTo(navController.graph.id) { inclusive = true }

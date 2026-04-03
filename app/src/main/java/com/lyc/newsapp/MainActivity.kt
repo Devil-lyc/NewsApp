@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -12,6 +13,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import com.lyc.newsapp.data.preferences.ThemeMode
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
@@ -53,14 +55,16 @@ class MainActivity : ComponentActivity() {
         setContent {
             StartupTracer.markEvent("setContent_started")
             
-            // 获取当前深色模式状态
-            val isDarkMode by themeViewModel.isDarkMode.collectAsState()
-            Timber.d("当前主题模式: ${if (isDarkMode) "深色" else "浅色"}")
-            
-            // 使用深色模式设置应用主题
-            NewsAppTheme(
-                darkTheme = isDarkMode
-            ) {
+            val themeUiState by themeViewModel.uiState.collectAsState()
+            val systemDark = isSystemInDarkTheme()
+            val darkTheme = when (themeUiState.mode) {
+                ThemeMode.DARK -> true
+                ThemeMode.LIGHT -> false
+                ThemeMode.SYSTEM -> systemDark
+            }
+            Timber.d("当前主题模式: ${themeUiState.mode} → darkTheme=$darkTheme")
+
+            NewsAppTheme(darkTheme = darkTheme) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background

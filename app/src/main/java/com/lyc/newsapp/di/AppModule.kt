@@ -2,7 +2,7 @@ package com.lyc.newsapp.di
 
 import android.content.Context
 import com.lyc.newsapp.data.preferences.ThemePreference
-import com.lyc.newsapp.util.ApiKeyConfig
+import com.lyc.newsapp.core.config.ApiKeyConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

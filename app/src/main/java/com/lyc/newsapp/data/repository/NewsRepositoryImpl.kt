@@ -1,9 +1,10 @@
 package com.lyc.newsapp.data.repository
 
+import com.lyc.newsapp.core.result.Resource
+import com.lyc.newsapp.data.mapper.toNews
 import com.lyc.newsapp.data.remote.NewsApi
 import com.lyc.newsapp.domain.model.News
-import com.lyc.newsapp.util.Resource
-import com.lyc.newsapp.util.toNews
+import com.lyc.newsapp.domain.repository.NewsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException
@@ -92,7 +93,7 @@ class NewsRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getNewsByCategory(
+    override suspend fun getNewsListByCategory(
         category: String,
         language: String,
         country: String,

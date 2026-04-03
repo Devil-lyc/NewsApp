@@ -1,7 +1,7 @@
 package com.lyc.newsapp.di
 
 import com.lyc.newsapp.data.remote.AuthApiService
-import com.lyc.newsapp.data.remote.AuthInterceptor
+import com.lyc.newsapp.data.remote.interceptor.AuthInterceptor
 import com.lyc.newsapp.data.remote.FavoriteApiService
 import dagger.Module
 import dagger.Provides
