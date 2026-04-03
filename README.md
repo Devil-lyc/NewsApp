@@ -1,1 +1,1 @@
-# NewsApp
+# 基于 Kotlin + Compose 构建、采用 MVVM 架构的新闻应用，聚焦高性能 UI 渲染与流畅交互体验，支持稳定的离线阅读功能。
