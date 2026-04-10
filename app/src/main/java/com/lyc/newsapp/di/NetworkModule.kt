@@ -3,6 +3,7 @@ package com.lyc.newsapp.di
 import com.lyc.newsapp.data.remote.AuthApiService
 import com.lyc.newsapp.data.remote.interceptor.AuthInterceptor
 import com.lyc.newsapp.data.remote.FavoriteApiService
+import com.lyc.newsapp.data.remote.interceptor.MetricsInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -62,12 +63,13 @@ object NetworkModule {
     @AuthClient
     @Provides
     @Singleton
-    fun provideAuthOkHttpClient(): OkHttpClient {
+    fun provideAuthOkHttpClient(metricsInterceptor: MetricsInterceptor): OkHttpClient {
         val loggingInterceptor = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         }
         
         return OkHttpClient.Builder()
+            .addInterceptor(metricsInterceptor)
             .addInterceptor(loggingInterceptor)
             .connectTimeout(15, TimeUnit.SECONDS)
             .readTimeout(15, TimeUnit.SECONDS)
@@ -81,12 +83,16 @@ object NetworkModule {
     @FavoriteClient
     @Provides
     @Singleton
-    fun provideFavoriteOkHttpClient(authInterceptor: AuthInterceptor): OkHttpClient {
+    fun provideFavoriteOkHttpClient(
+        authInterceptor: AuthInterceptor,
+        metricsInterceptor: MetricsInterceptor
+    ): OkHttpClient {
         val loggingInterceptor = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         }
         
         return OkHttpClient.Builder()
+            .addInterceptor(metricsInterceptor)
             .addInterceptor(loggingInterceptor)
             .addInterceptor(authInterceptor)  // 添加授权拦截器
             .connectTimeout(15, TimeUnit.SECONDS)
