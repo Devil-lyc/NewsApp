@@ -17,14 +17,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.lyc.newsapp.domain.model.News
 import com.lyc.newsapp.ui.components.NewsCard
 
 /** 搜索界面 */
@@ -34,10 +32,7 @@ fun SearchScreen(
 ) {
     val searchViewModel = hiltViewModel<SearchViewModel>()
     val searchUiState = searchViewModel.uiState.collectAsState()
-    // 搜索状态
-    var searchQuery by remember { mutableStateOf("") }
-
-    var isSearchActive by remember { mutableStateOf(false) }
+    val query = searchUiState.value.query
 
 
     // 热门搜索词
@@ -56,9 +51,8 @@ fun SearchScreen(
 
     // 执行搜索
     val performSearch = {
-        if (searchQuery.isNotBlank()) {
-            searchViewModel.dispatch(SearchIntent.SubmitSearch(searchQuery))
-            isSearchActive = true
+        if (query.isNotBlank()) {
+            searchViewModel.dispatch(SearchIntent.SubmitSearch(query))
             keyboardController?.hide()
         }
     }
@@ -76,13 +70,11 @@ fun SearchScreen(
                         .windowInsetsPadding(WindowInsets.statusBars)
                 ) {
                     SearchBar(
-                        query = searchQuery,
-                        onQueryChange = { searchQuery = it },
+                        query = query,
+                        onQueryChange = { searchViewModel.dispatch(SearchIntent.QueryChanged(it)) },
                         onSearch = { performSearch() },
                         onClear = {
-                            searchQuery = ""
-                            isSearchActive = false
-                            searchViewModel.dispatch(SearchIntent.ClearError)
+                            searchViewModel.dispatch(SearchIntent.ClearQuery)
                         }
                     )
                 }
@@ -90,9 +82,14 @@ fun SearchScreen(
         },
         contentWindowInsets = WindowInsets.statusBars
     ) { paddingValues ->
+        val showHotSearch = query.isBlank() &&
+            !searchUiState.value.isLoading &&
+            searchUiState.value.error == null &&
+            searchUiState.value.searchResults.isEmpty()
+
         when {
             // 初始搜索页面
-            !isSearchActive -> {
+            showHotSearch -> {
                 Column(modifier = Modifier.fillMaxSize().padding(paddingValues).padding(16.dp)) {
                     // 热门搜索
                     Text(
@@ -114,7 +111,7 @@ fun SearchScreen(
                                 text = term,
                                 hotness = hotness,
                                 onClick = {
-                                    searchQuery = term
+                                    searchViewModel.dispatch(SearchIntent.QueryChanged(term))
                                     performSearch()
                                 }
                             )
@@ -143,7 +140,7 @@ fun SearchScreen(
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
-                            text = "正在搜索「${searchQuery}」...",
+                            text = "正在搜索「${query}」...",
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -233,7 +230,10 @@ fun SearchScreen(
                     contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    items(searchUiState.value.searchResults) { news ->
+                    items(
+                        items = searchUiState.value.searchResults,
+                        key = { it.id }
+                    ) { news ->
                         NewsCard(
                             news = news,
                             onArticleClick = onArticleClick,

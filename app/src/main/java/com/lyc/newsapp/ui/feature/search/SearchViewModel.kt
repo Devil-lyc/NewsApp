@@ -1,6 +1,7 @@
 package com.lyc.newsapp.ui.feature.search
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.lyc.newsapp.core.result.Resource
 import com.lyc.newsapp.domain.repository.NewsRepository
@@ -14,20 +15,32 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val newsRepository: NewsRepository
+    private val newsRepository: NewsRepository,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel(), MviHost<SearchUiState, SearchIntent> {
 
-    private val _uiState = MutableStateFlow(SearchUiState())
+    private val _uiState = MutableStateFlow(
+        SearchUiState(query = savedStateHandle[KEY_QUERY] ?: "")
+    )
     override val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
 
     override fun dispatch(intent: SearchIntent) {
         when (intent) {
-            is SearchIntent.SubmitSearch -> searchNews(intent.query)
+            is SearchIntent.QueryChanged -> {
+                _uiState.value = _uiState.value.copy(query = intent.query)
+                persistQuery(intent.query)
+            }
+            is SearchIntent.SubmitSearch -> searchNews(intent.query.trim())
+            is SearchIntent.ClearQuery -> {
+                _uiState.value = SearchUiState()
+                persistQuery("")
+            }
             is SearchIntent.ClearError -> _uiState.value = _uiState.value.copy(error = null)
         }
     }
 
     private fun searchNews(query: String) {
+        persistQuery(query)
         _uiState.value = SearchUiState(
             query = query,
             isLoading = true,
@@ -60,5 +73,13 @@ class SearchViewModel @Inject constructor(
                     }
                 }
         }
+    }
+
+    private fun persistQuery(query: String) {
+        savedStateHandle[KEY_QUERY] = query
+    }
+
+    private companion object {
+        const val KEY_QUERY = "search_query"
     }
 }
