@@ -1,7 +1,9 @@
 package com.lyc.newsapp.ui.feature.home
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lyc.newsapp.domain.model.NewsCategories
 import com.lyc.newsapp.domain.repository.NewsRepository
 import com.lyc.newsapp.ui.mvi.MviHost
 import com.lyc.newsapp.core.result.Resource
@@ -28,14 +30,26 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val newsRepository: NewsRepository
+    private val newsRepository: NewsRepository,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel(), MviHost<HomeUiState, HomeIntent> {
 
-    private val _uiState = MutableStateFlow(HomeUiState())
+    private val _uiState = MutableStateFlow(
+        HomeUiState(
+            isLoading = true,
+            errorMessage = null,
+            selectedCategoryId = restoreCategoryId(savedStateHandle)
+        )
+    )
     override val uiState = _uiState.asStateFlow()
 
     override fun dispatch(intent: HomeIntent) {
         when (intent) {
+            is HomeIntent.SelectCategory -> {
+                val id = normalizeCategoryId(intent.categoryId)
+                savedStateHandle[KEY_SELECTED_CATEGORY] = id
+                _uiState.update { it.copy(selectedCategoryId = id) }
+            }
             is HomeIntent.Refresh -> {
                 _uiState.update { it.copy(isLoading = true) }
                 refreshData(intent.category)
@@ -66,8 +80,8 @@ class HomeViewModel @Inject constructor(
         StartupTracer.startStage(StartupTracer.Stages.VIEWMODEL_INIT)
         Timber.d("HomeViewModel初始化")
         
-        // 在初始化时直接设置加载状态，确保初始状态中的errorMessage为null
-        _uiState.value = HomeUiState(isLoading = true, errorMessage = null)
+        // 保持已恢复的 selectedCategoryId，仅刷新加载态
+        _uiState.update { it.copy(isLoading = true, errorMessage = null) }
         
         // 优化初始化 - 在后台线程准备ViewModel状态
         viewModelScope.launch(Dispatchers.Default) {
@@ -529,6 +543,21 @@ class HomeViewModel @Inject constructor(
                         }
                     }
                 }
+        }
+    }
+
+    private companion object {
+        private const val KEY_SELECTED_CATEGORY = "home_selected_category_id"
+
+        private fun restoreCategoryId(savedStateHandle: SavedStateHandle): String {
+            val raw = savedStateHandle.get<String>(KEY_SELECTED_CATEGORY)
+            return normalizeCategoryId(raw)
+        }
+
+        private fun normalizeCategoryId(id: String?): String {
+            if (id.isNullOrBlank()) return "all"
+            val valid = NewsCategories.categories.any { it.id == id }
+            return if (valid) id else "all"
         }
     }
 }

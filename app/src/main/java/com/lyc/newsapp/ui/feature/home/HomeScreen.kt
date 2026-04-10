@@ -76,9 +76,6 @@ fun HomeScreen(
     // ViewModel和状态 - 延迟初始化以减少UI阻塞
     val coroutineScope = rememberCoroutineScope()
 
-    // 使用LaunchedEffect处理初始状态设置，减少Composable函数体中的复杂计算
-    var selectedCategory by remember { mutableStateOf(NewsCategories.categories.first()) }
-
     // 为每个分类创建独立的滚动状态 - 在主Composable外预先创建，提高渲染速度
     val allListState = rememberLazyListState()
     val technologyListState = rememberLazyListState()
@@ -102,14 +99,18 @@ fun HomeScreen(
             "politics" to politicsListState
         )
     }
+    // 使用延迟收集状态，减少初始渲染压力
+    val homeUiState by homeViewModel.uiState.collectAsState()
+
+    val selectedCategory = remember(homeUiState.selectedCategoryId) {
+        NewsCategories.categories.find { it.id == homeUiState.selectedCategoryId }
+            ?: NewsCategories.categories.first()
+    }
 
     // 获取当前分类的滚动状态
     val currentScrollState = remember(selectedCategory.id) {
         scrollStates[selectedCategory.id] ?: allListState
     }
-
-    // 使用延迟收集状态，减少初始渲染压力
-    val homeUiState by homeViewModel.uiState.collectAsState()
 
     // 直接根据 selectedCategory 从 homeUiState 获取新闻列表
     val newsList = remember(selectedCategory.id, homeUiState) {
@@ -176,7 +177,7 @@ fun HomeScreen(
             // 分类选项卡 - 尽早渲染，提供用户界面响应
             CategoryTabs(categories = NewsCategories.categories,
                 selectedCategory = selectedCategory,
-                onCategorySelected = { selectedCategory = it })
+                onCategorySelected = { homeViewModel.dispatch(HomeIntent.SelectCategory(it.id)) })
 
             // 新闻列表区域
             Box(
