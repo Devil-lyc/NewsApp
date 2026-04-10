@@ -9,5 +9,7 @@ data class NetworkOverviewMetric(
     val durationMs: Long,
     val cacheHit: Boolean,
     val fromNetwork: Boolean,
+    /** 由拦截器写入的 [X-News-Cache-Policy]，如 offline-fallback、swr-stale-refresh */
+    val cachePolicy: String? = null,
     val errorType: String? = null
 )

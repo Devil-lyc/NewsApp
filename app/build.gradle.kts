@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.baselineprofile)
 }
 
 android {
@@ -42,6 +43,13 @@ android {
 }
 
 dependencies {
+    // 强制使用 catalog 中的 profileinstaller，避免被其它依赖降到旧版导致 Baseline Profile 生成收不到 save 广播
+    constraints {
+        implementation(libs.androidx.profileinstaller) {
+            because("Baseline Profile / macrobenchmark 在 Android 15+ 需 1.4.x+")
+        }
+    }
+
     // AndroidX Core
 //    implementation("androidx.core:core:1.10.1")
     implementation(libs.androidx.core.ktx)
@@ -77,6 +85,8 @@ dependencies {
     // Room
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
+    implementation(libs.androidx.profileinstaller)
+    "baselineProfile"(project(":baselineprofile"))
     ksp(libs.room.compiler)
 
     // Dagger Hilt
@@ -107,4 +117,9 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+}
+
+baselineProfile {
+    // 将生成的 profile 写入 app/src/main/baselineProfiles/，便于提交仓库并在 release 中享受 AOT 收益
+    saveInSrc = true
 }

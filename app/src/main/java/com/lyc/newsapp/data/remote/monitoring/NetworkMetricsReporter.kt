@@ -12,7 +12,7 @@ interface NetworkMetricsReporter {
 class TimberNetworkMetricsReporter @Inject constructor() : NetworkMetricsReporter {
     override fun reportOverview(metric: NetworkOverviewMetric) {
         Timber.tag("NetOverview").d(
-            "method=%s host=%s path=%s code=%s success=%s durationMs=%d cacheHit=%s fromNetwork=%s errorType=%s",
+            "method=%s host=%s path=%s code=%s success=%s durationMs=%d cacheHit=%s fromNetwork=%s cachePolicy=%s errorType=%s",
             metric.method,
             metric.host,
             metric.path,
@@ -21,6 +21,7 @@ class TimberNetworkMetricsReporter @Inject constructor() : NetworkMetricsReporte
             metric.durationMs,
             metric.cacheHit,
             metric.fromNetwork,
+            metric.cachePolicy ?: "null",
             metric.errorType ?: "null"
         )
     }

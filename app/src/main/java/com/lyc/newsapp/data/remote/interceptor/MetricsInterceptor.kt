@@ -40,6 +40,7 @@ class MetricsInterceptor @Inject constructor(
                     durationMs = duration,
                     cacheHit = response?.cacheResponse != null,
                     fromNetwork = response?.networkResponse != null,
+                    cachePolicy = response?.header("X-News-Cache-Policy"),
                     errorType = error?.javaClass?.simpleName
                 )
             )
