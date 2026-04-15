@@ -46,11 +46,11 @@ class NewsRepositoryImpl @Inject constructor(
             val newsDtoList = newsResponse.results
             newsDtoList?.let { newsList ->
                 val remoteList = newsList.map {
-                    it.toNews(nextPage = nextPage!!)
+                    it.toNews(nextPage = nextPage ?: "")
                 }
                 emit(Resource.Success(remoteList))
                 emit(Resource.Loading(false))
-            }
+            } ?: emit(Resource.Loading(false))
 
         }
     }
@@ -176,12 +176,12 @@ class NewsRepositoryImpl @Inject constructor(
             val newsDtoList = newsResponse.results
             newsDtoList?.let { newsList ->
                 val remoteList = newsList.map {
-                    it.toNews(nextPage = nextPage1!!)
+                    it.toNews(nextPage = nextPage1 ?: "")
                 }
                 emit(Resource.Success(remoteList))
                 emit(Resource.Loading(false))
 
-            }
+            } ?: emit(Resource.Loading(false))
         }
     }
 
