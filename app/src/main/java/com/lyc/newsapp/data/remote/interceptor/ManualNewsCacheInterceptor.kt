@@ -148,7 +148,7 @@ class ManualNewsCacheInterceptor @Inject constructor(
         private val newsHost = java.net.URI.create(NewsApi.BASE_URL).host ?: "newsdata.io"
         private val kv: MMKV by lazy { MMKV.mmkvWithID("news_manual_http_cache", MMKV.MULTI_PROCESS_MODE) }
 
-        const val TTL_MS = 5 * 60 * 1000L
+        const val TTL_MS = 3 * 60 * 60 * 1000L
         const val BACKGROUND_REFRESH_MIN_INTERVAL_MS = 30_000L
 
         const val HEADER_BYPASS_CACHE = "X-News-Bypass-Manual-Cache"
